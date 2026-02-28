@@ -18,6 +18,7 @@
             <button class="mode-tab" data-mode="graph">2D Graph</button>
             <button class="mode-tab" data-mode="surface">3D Surface</button>
             <button class="mode-tab" data-mode="visualize">3D View</button>
+            <button class="mode-tab" data-mode="matrix">Matrix</button>
         </div>
         
         <div class="calculator">
@@ -114,6 +115,41 @@
                 <div class="viz-container">
                     <canvas id="viz-canvas" width="500" height="400"></canvas>
                     <p class="viz-hint">Drag to rotate • Scroll to zoom</p>
+                </div>
+            </div>
+            <div class="matrix-mode" style="display: none;">
+                <div class="input-group">
+                    <label for="matrix-size">Matrix Size</label>
+                    <select id="matrix-size">
+                        <option value="2">2 × 2</option>
+                        <option value="3">3 × 3</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label>Matrix A</label>
+                    <div class="matrix-inputs" id="matrix-a-inputs"></div>
+                </div>
+                <div class="input-group">
+                    <label>Matrix B <span class="optional">(optional for single matrix ops)</span></label>
+                    <div class="matrix-inputs" id="matrix-b-inputs"></div>
+                </div>
+                <div class="input-group">
+                    <label for="matrix-operation">Operation</label>
+                    <select id="matrix-operation">
+                        <option value="add">Add (A + B)</option>
+                        <option value="subtract">Subtract (A - B)</option>
+                        <option value="multiply">Multiply (A × B)</option>
+                        <option value="determinant">Determinant (det A)</option>
+                        <option value="transpose">Transpose (Aᵀ)</option>
+                        <option value="inverse">Inverse (A⁻¹)</option>
+                        <option value="scale">Scale A by number</option>
+                    </select>
+                </div>
+                <div class="input-group" id="scale-input-group" style="display: none;">
+                    <label for="scalar-value">Scalar Value</label>
+                    <input type="number" id="scalar-value" placeholder="Enter scalar" step="any" value="2">
+                </div>
+            </div>
                 </div>
             </div>
             <button id="calculate-btn">Calculate</button>

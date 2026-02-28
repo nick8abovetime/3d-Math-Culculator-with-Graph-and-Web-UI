@@ -22,6 +22,7 @@ document.addEventListener('DOMContentLoaded', () => {
             vectorMode.style.display = 'none';
             graphMode.style.display = 'none';
             surfaceMode.style.display = 'none';
+            document.querySelector('.matrix-mode').style.display = 'none';
             
             if (currentMode === 'expression') {
                 expressionMode.style.display = 'flex';
@@ -55,6 +56,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 surfaceMode.style.display = 'none';
                 visualizeMode.style.display = 'block';
                 drawVisualization();
+            } else if (currentMode === 'matrix') {
+                document.querySelector('.matrix-mode').style.display = 'block';
+                initMatrixInputs();
+            }
             }
             resultOutput.textContent = '-';
             errorMessage.textContent = '';
@@ -193,6 +198,214 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     expressionInput.focus();
+
+    const matrixSizeSelect = document.getElementById('matrix-size');
+    const matrixAInputs = document.getElementById('matrix-a-inputs');
+    const matrixBInputs = document.getElementById('matrix-b-inputs');
+    const matrixOperationSelect = document.getElementById('matrix-operation');
+    const scaleInputGroup = document.getElementById('scale-input-group');
+
+    function initMatrixInputs() {
+        const size = parseInt(matrixSizeSelect.value);
+        renderMatrixInputs(matrixAInputs, size, 'a');
+        renderMatrixInputs(matrixBInputs, size, 'b');
+    }
+
+    function renderMatrixInputs(container, size, prefix) {
+        container.innerHTML = '';
+        for (let i = 0; i < size; i++) {
+            const row = document.createElement('div');
+            row.className = 'matrix-row';
+            for (let j = 0; j < size; j++) {
+                const input = document.createElement('input');
+                input.type = 'number';
+                input.placeholder = '0';
+                input.step = 'any';
+                input.id = `mat-${prefix}-${i}-${j}`;
+                row.appendChild(input);
+            }
+            container.appendChild(row);
+        }
+    }
+
+    function getMatrixValues(container, size) {
+        const matrix = [];
+        for (let i = 0; i < size; i++) {
+            const row = [];
+            for (let j = 0; j < size; j++) {
+                const input = document.getElementById(`mat-${container}-${i}-${j}`);
+                row.push(parseFloat(input.value) || 0);
+            }
+            matrix.push(row);
+        }
+        return matrix;
+    }
+
+    function calculateMatrix() {
+        const size = parseInt(matrixSizeSelect.value);
+        const operation = matrixOperationSelect.value;
+        
+        const matA = getMatrixValues('a', size);
+        let matB = null;
+        if (operation !== 'determinant' && operation !== 'transpose' && operation !== 'inverse' && operation !== 'scale') {
+            matB = getMatrixValues('b', size);
+        }
+
+        try {
+            let result;
+            
+            switch (operation) {
+                case 'add':
+                    result = addMatrices(matA, matB);
+                    resultOutput.innerHTML = formatMatrixResult(result);
+                    break;
+                    
+                case 'subtract':
+                    result = subtractMatrices(matA, matB);
+                    resultOutput.innerHTML = formatMatrixResult(result);
+                    break;
+                    
+                case 'multiply':
+                    result = multiplyMatrices(matA, matB);
+                    resultOutput.innerHTML = formatMatrixResult(result);
+                    break;
+                    
+                case 'determinant':
+                    const det = determinant(matA);
+                    resultOutput.textContent = det.toFixed(4);
+                    break;
+                    
+                case 'transpose':
+                    result = transpose(matA);
+                    resultOutput.innerHTML = formatMatrixResult(result);
+                    break;
+                    
+                case 'inverse':
+                    result = inverse(matA);
+                    if (result) {
+                        resultOutput.innerHTML = formatMatrixResult(result);
+                    } else {
+                        resultOutput.textContent = 'undefined (singular matrix)';
+                    }
+                    break;
+                    
+                case 'scale':
+                    const scalar = parseFloat(document.getElementById('scalar-value').value) || 1;
+                    result = scaleMatrix(matA, scalar);
+                    resultOutput.innerHTML = formatMatrixResult(result);
+                    break;
+            }
+            errorMessage.textContent = '';
+        } catch (error) {
+            resultOutput.textContent = '-';
+            errorMessage.textContent = `Error: ${error.message}`;
+        }
+    }
+
+    function addMatrices(a, b) {
+        return a.map((row, i) => row.map((val, j) => val + b[i][j]));
+    }
+
+    function subtractMatrices(a, b) {
+        return a.map((row, i) => row.map((val, j) => val - b[i][j]));
+    }
+
+    function multiplyMatrices(a, b) {
+        const size = a.length;
+        const result = [];
+        for (let i = 0; i < size; i++) {
+            result[i] = [];
+            for (let j = 0; j < size; j++) {
+                let sum = 0;
+                for (let k = 0; k < size; k++) {
+                    sum += a[i][k] * b[k][j];
+                }
+                result[i][j] = sum;
+            }
+        }
+        return result;
+    }
+
+    function determinant(m) {
+        const n = m.length;
+        if (n === 1) return m[0][0];
+        if (n === 2) return m[0][0] * m[1][1] - m[0][1] * m[1][0];
+        
+        let det = 0;
+        for (let j = 0; j < n; j++) {
+            const submatrix = m.slice(1).map(row => row.filter((_, colIdx) => colIdx !== j));
+            det += Math.pow(-1, j) * m[0][j] * determinant(submatrix);
+        }
+        return det;
+    }
+
+    function transpose(m) {
+        return m[0].map((_, j) => m.map(row => row[j]));
+    }
+
+    function inverse(m) {
+        const det = determinant(m);
+        if (Math.abs(det) < 1e-10) return null;
+        
+        const n = m.length;
+        if (n === 1) return [[1 / m[0][0]]];
+        if (n === 2) {
+            const [[a, b], [c, d]] = m;
+            const invDet = 1 / (a * d - b * c);
+            return [[d * invDet, -b * invDet], [-c * invDet, a * invDet]];
+        }
+        
+        const adj = adjoint(m);
+        return adj.map(row => row.map(val => val / det));
+    }
+
+    function adjoint(m) {
+        const n = m.length;
+        if (n === 1) return [[1]];
+        
+        const cofactorMatrix = [];
+        for (let i = 0; i < n; i++) {
+            cofactorMatrix[i] = [];
+            for (let j = 0; j < n; j++) {
+                const submatrix = m.filter((_, rowIdx) => rowIdx !== i)
+                    .map(row => row.filter((_, colIdx) => colIdx !== j));
+                cofactorMatrix[i][j] = Math.pow(-1, i + j) * determinant(submatrix);
+            }
+        }
+        return transpose(cofactorMatrix);
+    }
+
+    function scaleMatrix(m, scalar) {
+        return m.map(row => row.map(val => val * scalar));
+    }
+
+    function formatMatrixResult(m) {
+        let html = '<div class="matrix-result"><table>';
+        m.forEach(row => {
+            html += '<tr>';
+            row.forEach(val => {
+                html += `<td>${typeof val === 'number' ? val.toFixed(4) : val}</td>`;
+            });
+            html += '</tr>';
+        });
+        html += '</table></div>';
+        return html;
+    }
+
+    matrixSizeSelect.addEventListener('change', initMatrixInputs);
+    
+    matrixOperationSelect.addEventListener('change', () => {
+        const op = matrixOperationSelect.value;
+        scaleInputGroup.style.display = op === 'scale' ? 'flex' : 'none';
+    });
+
+    document.getElementById('calculate-btn').addEventListener('click', () => {
+        if (currentMode === 'matrix') {
+            calculateMatrix();
+        } else {
+            calculate();
+        }
+    });
 
     const graphFunctionInput = document.getElementById('graph-function');
     const xMinInput = document.getElementById('x-min');
