@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2D Graph Tests</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.8.0/math.js"></script>
+    <style>
+        body { font-family: monospace; padding: 20px; }
+        .test { margin: 10px 0; padding: 10px; }
+        .pass { background: #d4edda; color: #155724; }
+        .fail { background: #f8d7da; color: #721c24; }
+        .pending { background: #fff3cd; color: #856404; }
+        #summary { margin-top: 20px; padding: 20px; font-size: 18px; }
+    </style>
+</head>
+<body>
+    <h1>2D Graph Tests</h1>
+    <div id="results"></div>
+    <div id="summary"></div>
+
+    <script>
+        const results = [];
+        let passed = 0;
+        let failed = 0;
+
+        function test(name, fn) {
+            const result = document.createElement('div');
+            result.className = 'test pending';
+            result.textContent = `Running: ${name}...`;
+            document.getElementById('results').appendChild(result);
+
+            try {
+                fn();
+                result.className = 'test pass';
+                result.textContent = `✓ PASS: ${name}`;
+                passed++;
+            } catch (e) {
+                result.className = 'test fail';
+                result.textContent = `✗ FAIL: ${name} - ${e.message}`;
+                failed++;
+            }
+        }
+
+        function assertEqual(actual, expected, message = '') {
+            if (actual !== expected) {
+                throw new Error(`Expected ${expected}, got ${actual}. ${message}`);
+            }
+        }
+
+        function assertTrue(value, message = '') {
+            if (!value) {
+                throw new Error(`Expected true, got ${value}. ${message}`);
+            }
+        }
+
+        function assertFalse(value, message = '') {
+            if (value) {
+                throw new Error(`Expected false, got ${value}. ${message}`);
+            }
+        }
+
+        function assertDefined(value, message = '') {
+            if (value === undefined || value === null) {
+                throw new Error(`Expected defined value, got ${value}. ${message}`);
+            }
+        }
+
+        // Mock canvas context for testing
+        const mockCtx = {
+            clearRect: () => {},
+            strokeStyle: '',
+            lineWidth: 1,
+            beginPath: () => {},
+            moveTo: () => {},
+            lineTo: () => {},
+            stroke: () => {},
+        };
+
+        // Test getYMin function
+        function getYMin(expr, xMin, xMax) {
+            let min = Infinity;
+            const compiled = math.compile(expr);
+            const steps = 100;
+            
+            for (let i = 0; i <= steps; i++) {
+                const x = xMin + (xMax - xMin) * i / steps;
+                try {
+                    const y = compiled.evaluate({ x: x });
+                    if (typeof y === 'number' && isFinite(y) && y < min) {
+                        min = y;
+                    }
+                } catch (e) {}
+            }
+            
+            return min === Infinity ? -10 : min;
+        }
+
+        // Test getYMax function
+        function getYMax(expr, xMin, xMax) {
+            let max = -Infinity;
+            const compiled = math.compile(expr);
+            const steps = 100;
+            
+            for (let i = 0; i <= steps; i++) {
+                const x = xMin + (xMax - xMin) * i / steps;
+                try {
+                    const y = compiled.evaluate({ x: x });
+                    if (typeof y === 'number' && isFinite(y) && y > max) {
+                        max = y;
+                    }
+                } catch (e) {}
+            }
+            
+            return max === -Infinity ? 10 : max;
+        }
+
+        // Run tests
+        console.log('Starting 2D Graph Tests...\n');
+
+        // Test 1: Linear function y = x
+        test('getYMin: Linear function y = x on [-5, 5]', () => {
+            const result = getYMin('x', -5, 5);
+            assertTrue(result <= -5 + 0.1, `Expected ~-5, got ${result}`);
+        });
+
+        test('getYMax: Linear function y = x on [-5, 5]', () => {
+            const result = getYMax('x', -5, 5);
+            assertTrue(result >= 5 - 0.1, `Expected ~5, got ${result}`);
+        });
+
+        // Test 2: Quadratic function y = x^2
+        test('getYMin: Quadratic y = x^2 on [-3, 3]', () => {
+            const result = getYMin('x^2', -3, 3);
+            assertTrue(result >= -0.1 && result <= 0.1, `Expected ~0, got ${result}`);
+        });
+
+        test('getYMax: Quadratic y = x^2 on [-3, 3]', () => {
+            const result = getYMax('x^2', -3, 3);
+            assertTrue(result >= 9 - 0.1, `Expected ~9, got ${result}`);
+        });
+
+        // Test 3: Sin function y = sin(x)
+        test('getYMin: Sin function y = sin(x) on [0, 2*pi]', () => {
+            const result = getYMin('sin(x)', 0, 2 * Math.PI);
+            assertTrue(result >= -1.1 && result <= -0.9, `Expected ~-1, got ${result}`);
+        });
+
+        test('getYMax: Sin function y = sin(x) on [0, 2*pi]', () => {
+            const result = getYMax('sin(x)', 0, 2 * Math.PI);
+            assertTrue(result >= 0.9 && result <= 1.1, `Expected ~1, got ${result}`);
+        });
+
+        // Test 4: Constant function y = 5
+        test('getYMin: Constant y = 5', () => {
+            const result = getYMin('5', -10, 10);
+            assertEqual(result, 5, 'Constant function should return exact value');
+        });
+
+        test('getYMax: Constant y = 5', () => {
+            const result = getYMax('5', -10, 10);
+            assertEqual(result, 5, 'Constant function should return exact value');
+        });
+
+        // Test 5: Absolute value y = abs(x)
+        test('getYMin: Absolute value y = abs(x) on [-5, 5]', () => {
+            const result = getYMin('abs(x)', -5, 5);
+            assertTrue(result >= -0.1 && result <= 0.1, `Expected ~0, got ${result}`);
+        });
+
+        // Test 6: Square root y = sqrt(x)
+        test('getYMin: Square root y = sqrt(x) on [0, 9]', () => {
+            const result = getYMin('sqrt(x)', 0, 9);
+            assertTrue(result >= -0.1 && result <= 0.1, `Expected ~0, got ${result}`);
+        });
+
+        test('getYMax: Square root y = sqrt(x) on [0, 9]', () => {
+            const result = getYMax('sqrt(x)', 0, 9);
+            assertTrue(result >= 3 - 0.1, `Expected ~3, got ${result}`);
+        });
+
+        // Test 7: Invalid expression handling
+        test('getYMin: Invalid expression returns default', () => {
+            const result = getYMin('invalid_func(x)', -5, 5);
+            assertEqual(result, -10, 'Invalid expression should return default -10');
+        });
+
+        test('getYMax: Invalid expression returns default', () => {
+            const result = getYMax('invalid_func(x)', -5, 5);
+            assertEqual(result, 10, 'Invalid expression should return default 10');
+        });
+
+        // Test 8: Exponential function y = exp(x)
+        test('getYMin: Exponential y = exp(x) on [0, 2]', () => {
+            const result = getYMin('exp(x)', 0, 2);
+            assertTrue(result >= 0.9 && result <= 1.1, `Expected ~1, got ${result}`);
+        });
+
+        test('getYMax: Exponential y = exp(x) on [0, 2]', () => {
+            const result = getYMax('exp(x)', 0, 2);
+            assertTrue(result >= 7.3 && result <= 7.5, `Expected ~7.389, got ${result}`);
+        });
+
+        // Test 9: Combined function y = sin(x) + cos(x)
+        test('getYMin: Combined sin(x) + cos(x) on [0, 2*pi]', () => {
+            const result = getYMin('sin(x) + cos(x)', 0, 2 * Math.PI);
+            assertTrue(result >= -1.5 && result <= -1.4, `Expected ~-1.414, got ${result}`);
+        });
+
+        // Test 10: Edge case - very small range
+        test('getYMin: Small range [-0.1, 0.1] with x^2', () => {
+            const result = getYMin('x^2', -0.1, 0.1);
+            assertTrue(result >= -0.01 && result <= 0.01, `Expected ~0, got ${result}`);
+        });
+
+        // Summary
+        const summary = document.getElementById('summary');
+        summary.innerHTML = `<strong>Results:</strong> ${passed} passed, ${failed} failed`;
+        if (failed === 0) {
+            summary.style.background = '#d4edda';
+            summary.style.color = '#155724';
+        } else {
+            summary.style.background = '#f8d7da';
+            summary.style.color = '#721c24';
+        }
+
+        console.log(`\nResults: ${passed} passed, ${failed} failed`);
+    </script>
+</body>
+</html>
