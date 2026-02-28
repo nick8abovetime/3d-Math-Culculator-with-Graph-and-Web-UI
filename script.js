@@ -60,7 +60,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 document.querySelector('.matrix-mode').style.display = 'block';
                 initMatrixInputs();
             }
-            }
             resultOutput.textContent = '-';
             errorMessage.textContent = '';
         });
