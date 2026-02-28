@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Matrix Tests</title>
+  <style>
+    body { font-family: monospace; padding: 20px; }
+    .test { margin: 10px 0; padding: 10px; }
+    .pass { background: #d4edda; color: #155724; }
+    .fail { background: #f8d7da; color: #721c24; }
+    #summary { margin-top: 20px; padding: 20px; font-size: 18px; }
+  </style>
+</head>
+<body>
+  <h1>Matrix UI Tests</h1>
+  <div id="results"></div>
+  <div id="summary"></div>
+
+  <script>
+    const results = [];
+    let passed = 0;
+    let failed = 0;
+
+    function test(name, fn) {
+      const result = document.createElement('div');
+      result.className = 'test';
+      result.textContent = `Running: ${name}...`;
+      document.getElementById('results').appendChild(result);
+
+      try {
+        fn();
+        result.className = 'test pass';
+        result.textContent = `✓ PASS: ${name}`;
+        passed++;
+      } catch (e) {
+        result.className = 'test fail';
+        result.textContent = `✗ FAIL: ${name} - ${e.message}`;
+        failed++;
+      }
+    }
+
+    function assertEqual(actual, expected, message = '') {
+      if (JSON.stringify(actual) !== JSON.stringify(expected)) {
+        throw new Error(`Expected ${JSON.stringify(expected)}, got ${JSON.stringify(actual)}. ${message}`);
+      }
+    }
+
+    function assertTrue(value, message = '') {
+      if (!value) {
+        throw new Error(`Expected true, got ${value}. ${message}`);
+      }
+    }
+
+    function arraysEqual(a, b, tolerance = 1e-6) {
+      if (a.length !== b.length) return false;
+      for (let i = 0; i < a.length; i++) {
+        if (Array.isArray(a[i]) && Array.isArray(b[i])) {
+          if (!arraysEqual(a[i], b[i], tolerance)) return false;
+        } else if (Math.abs(a[i] - b[i]) > tolerance) {
+          return false;
+        }
+      }
+      return true;
+    }
+
+    function addMatrices(a, b) {
+      return a.map((row, i) => row.map((val, j) => val + b[i][j]));
+    }
+
+    function subtractMatrices(a, b) {
+      return a.map((row, i) => row.map((val, j) => val - b[i][j]));
+    }
+
+    function multiplyMatrices(a, b) {
+      const size = a.length;
+      const result = [];
+      for (let i = 0; i < size; i++) {
+        result[i] = [];
+        for (let j = 0; j < size; j++) {
+          let sum = 0;
+          for (let k = 0; k < size; k++) {
+            sum += a[i][k] * b[k][j];
+          }
+          result[i][j] = sum;
+        }
+      }
+      return result;
+    }
+
+    function determinant(m) {
+      const n = m.length;
+      if (n === 1) return m[0][0];
+      if (n === 2) return m[0][0] * m[1][1] - m[0][1] * m[1][0];
+      
+      let det = 0;
+      for (let j = 0; j < n; j++) {
+        const submatrix = m.slice(1).map(row => row.filter((_, colIdx) => colIdx !== j));
+        det += Math.pow(-1, j) * m[0][j] * determinant(submatrix);
+      }
+      return det;
+    }
+
+    function transpose(m) {
+      return m[0].map((_, j) => m.map(row => row[j]));
+    }
+
+    function adjoint(m) {
+      const n = m.length;
+      if (n === 1) return [[1]];
+      
+      const cofactorMatrix = [];
+      for (let i = 0; i < n; i++) {
+        cofactorMatrix[i] = [];
+        for (let j = 0; j < n; j++) {
+          const submatrix = m.filter((_, rowIdx) => rowIdx !== i)
+            .map(row => row.filter((_, colIdx) => colIdx !== j));
+          cofactorMatrix[i][j] = Math.pow(-1, i + j) * determinant(submatrix);
+        }
+      }
+      return transpose(cofactorMatrix);
+    }
+
+    function inverse(m) {
+      const det = determinant(m);
+      if (Math.abs(det) < 1e-10) return null;
+      
+      const n = m.length;
+      if (n === 1) return [[1 / m[0][0]]];
+      if (n === 2) {
+        const [[a, b], [c, d]] = m;
+        const invDet = 1 / (a * d - b * c);
+        return [[d * invDet, -b * invDet], [-c * invDet, a * invDet]];
+      }
+      
+      const adj = adjoint(m);
+      return adj.map(row => row.map(val => val / det));
+    }
+
+    function scaleMatrix(m, scalar) {
+      return m.map(row => row.map(val => val * scalar));
+    }
+
+    console.log('Starting Matrix Tests...\n');
+
+    test('addMatrices 2x2', () => {
+      const result = addMatrices(
+        [[1, 2], [3, 4]],
+        [[5, 6], [7, 8]]
+      );
+      assertTrue(arraysEqual(result, [[6, 8], [10, 12]]));
+    });
+
+    test('subtractMatrices 2x2', () => {
+      const result = subtractMatrices(
+        [[5, 6], [7, 8]],
+        [[1, 2], [3, 4]]
+      );
+      assertTrue(arraysEqual(result, [[4, 4], [4, 4]]));
+    });
+
+    test('multiplyMatrices 2x2', () => {
+      const result = multiplyMatrices(
+        [[1, 2], [3, 4]],
+        [[5, 6], [7, 8]]
+      );
+      assertTrue(arraysEqual(result, [[19, 22], [43, 50]]));
+    });
+
+    test('determinant 2x2', () => {
+      const result = determinant([[1, 2], [3, 4]]);
+      assertTrue(Math.abs(result - (-2)) < 1e-6);
+    });
+
+    test('determinant 3x3 singular', () => {
+      const result = determinant([[1, 2, 3], [4, 5, 6], [7, 8, 9]]);
+      assertTrue(Math.abs(result - 0) < 1e-6);
+    });
+
+    test('transpose 2x3', () => {
+      const result = transpose([[1, 2, 3], [4, 5, 6]]);
+      assertTrue(arraysEqual(result, [[1, 4], [2, 5], [3, 6]]));
+    });
+
+    test('inverse 2x2', () => {
+      const result = inverse([[4, 7], [2, 6]]);
+      assertTrue(arraysEqual(result, [[0.6, -0.7], [-0.2, 0.4]]));
+    });
+
+    test('scaleMatrix', () => {
+      const result = scaleMatrix([[1, 2], [3, 4]], 2);
+      assertTrue(arraysEqual(result, [[2, 4], [6, 8]]));
+    });
+
+    test('inverse of singular matrix returns null', () => {
+      const result = inverse([[1, 2], [2, 4]]);
+      assertTrue(result === null);
+    });
+
+    test('determinant 1x1', () => {
+      const result = determinant([[5]]);
+      assertEqual(result, 5);
+    });
+
+    const summary = document.getElementById('summary');
+    summary.innerHTML = `<strong>Results:</strong> ${passed} passed, ${failed} failed`;
+    if (failed === 0) {
+      summary.style.background = '#d4edda';
+      summary.style.color = '#155724';
+    } else {
+      summary.style.background = '#f8d7da';
+      summary.style.color = '#721c24';
+    }
+
+    console.log(`\nResults: ${passed} passed, ${failed} failed`);
+  </script>
+</body>
+</html>
