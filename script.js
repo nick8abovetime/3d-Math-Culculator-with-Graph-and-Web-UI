@@ -85,7 +85,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
         try {
             const result = math.evaluate(expression);
-            resultOutput.textContent = result;
+            const formatted = typeof result === 'number' ? result : 
+                             result.valueOf ? result.valueOf() : result;
+            resultOutput.textContent = formatted;
             errorMessage.textContent = '';
         } catch (error) {
             resultOutput.textContent = '-';
