@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D Math Calculator</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.8.0/math.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1>3D Math Calculator</h1>
+        <div class="calculator">
+            <div class="input-group">
+                <label for="expression">Enter Expression</label>
+                <input type="text" id="expression" placeholder="e.g., 2+2, sqrt(16), sin(pi/2)">
+            </div>
+            <button id="calculate-btn">Calculate</button>
+            <div class="result">
+                <label>Result</label>
+                <output id="result-output">-</output>
+            </div>
+            <div class="error" id="error-message"></div>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
