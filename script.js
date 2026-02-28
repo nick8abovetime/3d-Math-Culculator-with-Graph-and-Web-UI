@@ -600,7 +600,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const pointLight = new THREE.PointLight(0xffffff, 0.5);
         pointLight.position.set(-5, 8, 5);
         scene.add(pointLight);
-
         const axesHelper = new THREE.AxesHelper(5);
         scene.add(axesHelper);
 
