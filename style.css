@@ -43,6 +43,34 @@ h1 {
     font-size: 28px;
 }
 
+.mode-tabs {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.mode-tab {
+    flex: 1;
+    background: #e0e0e0;
+    color: #555;
+    border: none;
+    padding: 10px 16px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.mode-tab.active {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+}
+
+.mode-tab:hover:not(.active) {
+    background: #d0d0d0;
+}
+
 .calculator {
     display: flex;
     flex-direction: column;
@@ -61,7 +89,14 @@ label {
     font-size: 14px;
 }
 
-input[type="text"] {
+.optional {
+    font-weight: 400;
+    color: #888;
+    font-size: 12px;
+}
+
+input[type="text"],
+input[type="number"] {
     padding: 14px 16px;
     border: 2px solid #e0e0e0;
     border-radius: 8px;
@@ -69,7 +104,33 @@ input[type="text"] {
     transition: border-color 0.3s ease;
 }
 
-input[type="text"]:focus {
+input[type="text"]:focus,
+input[type="number"]:focus {
+    outline: none;
+    border-color: #667eea;
+}
+
+.vector-inputs {
+    display: flex;
+    gap: 10px;
+}
+
+.vector-inputs input {
+    flex: 1;
+    text-align: center;
+}
+
+select {
+    padding: 14px 16px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 16px;
+    background: white;
+    cursor: pointer;
+    transition: border-color 0.3s ease;
+}
+
+select:focus {
     outline: none;
     border-color: #667eea;
     box-shadow: 0 0 20px rgba(102, 126, 234, 0.3);

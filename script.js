@@ -3,8 +3,39 @@ document.addEventListener('DOMContentLoaded', () => {
     const calculateBtn = document.getElementById('calculate-btn');
     const resultOutput = document.getElementById('result-output');
     const errorMessage = document.getElementById('error-message');
+    const modeTabs = document.querySelectorAll('.mode-tab');
+    const expressionMode = document.querySelector('.expression-mode');
+    const vectorMode = document.querySelector('.vector-mode');
+
+    let currentMode = 'expression';
+
+    modeTabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+            modeTabs.forEach(t => t.classList.remove('active'));
+            tab.classList.add('active');
+            currentMode = tab.dataset.mode;
+            
+            if (currentMode === 'expression') {
+                expressionMode.style.display = 'flex';
+                vectorMode.style.display = 'none';
+            } else {
+                expressionMode.style.display = 'none';
+                vectorMode.style.display = 'block';
+            }
+            resultOutput.textContent = '-';
+            errorMessage.textContent = '';
+        });
+    });
 
     function calculate() {
+        if (currentMode === 'expression') {
+            calculateExpression();
+        } else {
+            calculateVector();
+        }
+    }
+
+    function calculateExpression() {
         const expression = expressionInput.value.trim();
         
         if (!expression) {
@@ -16,6 +47,102 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             const result = math.evaluate(expression);
             resultOutput.textContent = result;
+            errorMessage.textContent = '';
+        } catch (error) {
+            resultOutput.textContent = '-';
+            errorMessage.textContent = `Error: ${error.message}`;
+        }
+    }
+
+    function calculateVector() {
+        const ax = parseFloat(document.getElementById('vec-a-x').value) || 0;
+        const ay = parseFloat(document.getElementById('vec-a-y').value) || 0;
+        const az = parseFloat(document.getElementById('vec-a-z').value) || 0;
+        const bx = parseFloat(document.getElementById('vec-b-x').value) || 0;
+        const by = parseFloat(document.getElementById('vec-b-y').value) || 0;
+        const bz = parseFloat(document.getElementById('vec-b-z').value) || 0;
+        
+        const operation = document.getElementById('vector-operation').value;
+        
+        const vecA = { x: ax, y: ay, z: az };
+        const vecB = { x: bx, y: by, z: bz };
+        
+        try {
+            let result;
+            
+            switch (operation) {
+                case 'add':
+                    result = {
+                        x: vecA.x + vecB.x,
+                        y: vecA.y + vecB.y,
+                        z: vecA.z + vecB.z
+                    };
+                    resultOutput.textContent = `(${result.x}, ${result.y}, ${result.z})`;
+                    break;
+                    
+                case 'subtract':
+                    result = {
+                        x: vecA.x - vecB.x,
+                        y: vecA.y - vecB.y,
+                        z: vecA.z - vecB.z
+                    };
+                    resultOutput.textContent = `(${result.x}, ${result.y}, ${result.z})`;
+                    break;
+                    
+                case 'dot':
+                    result = vecA.x * vecB.x + vecA.y * vecB.y + vecA.z * vecB.z;
+                    resultOutput.textContent = result.toFixed(4);
+                    break;
+                    
+                case 'cross':
+                    result = {
+                        x: vecA.y * vecB.z - vecA.z * vecB.y,
+                        y: vecA.z * vecB.x - vecA.x * vecB.z,
+                        z: vecA.x * vecB.y - vecA.y * vecB.x
+                    };
+                    resultOutput.textContent = `(${result.x}, ${result.y}, ${result.z})`;
+                    break;
+                    
+                case 'magnitude':
+                    result = Math.sqrt(vecA.x * vecA.x + vecA.y * vecA.y + vecA.z * vecA.z);
+                    resultOutput.textContent = result.toFixed(4);
+                    break;
+                    
+                case 'normalize':
+                    const mag = Math.sqrt(vecA.x * vecA.x + vecA.y * vecA.y + vecA.z * vecA.z);
+                    if (mag === 0) {
+                        resultOutput.textContent = '(0, 0, 0)';
+                    } else {
+                        result = {
+                            x: vecA.x / mag,
+                            y: vecA.y / mag,
+                            z: vecA.z / mag
+                        };
+                        resultOutput.textContent = `(${result.x.toFixed(4)}, ${result.y.toFixed(4)}, ${result.z.toFixed(4)})`;
+                    }
+                    break;
+                    
+                case 'distance':
+                    const dx = vecA.x - vecB.x;
+                    const dy = vecA.y - vecB.y;
+                    const dz = vecA.z - vecB.z;
+                    result = Math.sqrt(dx * dx + dy * dy + dz * dz);
+                    resultOutput.textContent = result.toFixed(4);
+                    break;
+                    
+                case 'angle':
+                    const dot = vecA.x * vecB.x + vecA.y * vecB.y + vecA.z * vecB.z;
+                    const magA = Math.sqrt(vecA.x * vecA.x + vecA.y * vecA.y + vecA.z * vecA.z);
+                    const magB = Math.sqrt(vecB.x * vecB.x + vecB.y * vecB.y + vecB.z * vecB.z);
+                    if (magA === 0 || magB === 0) {
+                        resultOutput.textContent = 'undefined (zero vector)';
+                    } else {
+                        const cosAngle = Math.max(-1, Math.min(1, dot / (magA * magB)));
+                        result = Math.acos(cosAngle) * (180 / Math.PI);
+                        resultOutput.textContent = result.toFixed(2) + '°';
+                    }
+                    break;
+            }
             errorMessage.textContent = '';
         } catch (error) {
             resultOutput.textContent = '-';
