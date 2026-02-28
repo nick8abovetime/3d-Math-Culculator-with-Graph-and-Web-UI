@@ -154,3 +154,59 @@ button:active {
 .error:empty {
     display: none;
 }
+
+.graph-section {
+    margin-top: 40px;
+    padding-top: 30px;
+    border-top: 2px solid #e0e0e0;
+}
+
+.graph-section h2 {
+    color: #333;
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 22px;
+}
+
+.graph-inputs {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.range-inputs {
+    display: flex;
+    gap: 15px;
+}
+
+.range-inputs .input-group {
+    flex: 1;
+}
+
+input[type="number"] {
+    padding: 14px 16px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 16px;
+    transition: border-color 0.3s ease;
+    width: 100%;
+}
+
+input[type="number"]:focus {
+    outline: none;
+    border-color: #667eea;
+}
+
+#graph-canvas {
+    display: block;
+    margin: 0 auto;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    background: #fff;
+}
+
+#graph-error {
+    text-align: center;
+    margin-top: 10px;
+}

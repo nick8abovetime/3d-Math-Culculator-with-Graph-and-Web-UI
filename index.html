@@ -22,6 +22,29 @@
             </div>
             <div class="error" id="error-message"></div>
         </div>
+        
+        <div class="graph-section">
+            <h2>2D Graphing</h2>
+            <div class="graph-inputs">
+                <div class="input-group">
+                    <label for="graph-function">Function f(x)</label>
+                    <input type="text" id="graph-function" placeholder="e.g., sin(x), x^2, sqrt(x)">
+                </div>
+                <div class="range-inputs">
+                    <div class="input-group">
+                        <label for="x-min">X Min</label>
+                        <input type="number" id="x-min" value="-10" step="1">
+                    </div>
+                    <div class="input-group">
+                        <label for="x-max">X Max</label>
+                        <input type="number" id="x-max" value="10" step="1">
+                    </div>
+                </div>
+                <button id="graph-btn">Graph</button>
+            </div>
+            <canvas id="graph-canvas" width="600" height="400"></canvas>
+            <div class="error" id="graph-error"></div>
+        </div>
     </div>
     <script src="script.js"></script>
 </body>
