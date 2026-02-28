@@ -37,3 +37,8 @@ go.work.sum
 .logs/
 .beads/
 .opencode/
+
+# Python
+__pycache__/
+*.pyc
+.pytest_cache/
