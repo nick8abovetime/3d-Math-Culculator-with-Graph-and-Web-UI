@@ -17,6 +17,7 @@
             <button class="mode-tab" data-mode="vector">3D Vector</button>
             <button class="mode-tab" data-mode="graph">2D Graph</button>
             <button class="mode-tab" data-mode="surface">3D Surface</button>
+            <button class="mode-tab" data-mode="visualize">3D View</button>
         </div>
         
         <div class="calculator">
@@ -92,6 +93,29 @@
                 <div class="error" id="3d-error-message"></div>
             </div>
             
+            <div class="visualize-mode" style="display: none;">
+                <div class="input-group">
+                    <label>Vector A (x, y, z)</label>
+                    <div class="vector-inputs">
+                        <input type="number" id="viz-vec-a-x" placeholder="x" step="any" value="3">
+                        <input type="number" id="viz-vec-a-y" placeholder="y" step="any" value="4">
+                        <input type="number" id="viz-vec-a-z" placeholder="z" step="any" value="0">
+                    </div>
+                </div>
+                <div class="input-group">
+                    <label>Vector B (x, y, z) <span class="optional">(optional)</span></label>
+                    <div class="vector-inputs">
+                        <input type="number" id="viz-vec-b-x" placeholder="x" step="any" value="0">
+                        <input type="number" id="viz-vec-b-y" placeholder="y" step="any" value="3">
+                        <input type="number" id="viz-vec-b-z" placeholder="z" step="any" value="2">
+                    </div>
+                </div>
+                <button id="update-viz-btn">Update View</button>
+                <div class="viz-container">
+                    <canvas id="viz-canvas" width="500" height="400"></canvas>
+                    <p class="viz-hint">Drag to rotate • Scroll to zoom</p>
+                </div>
+            </div>
             <button id="calculate-btn">Calculate</button>
             <div class="result">
                 <label>Result</label>

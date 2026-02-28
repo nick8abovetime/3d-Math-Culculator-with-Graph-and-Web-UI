@@ -272,3 +272,35 @@ button:active {
 #3d-canvas-container canvas {
     display: block;
 }
+
+.visualize-mode {
+    display: none;
+}
+
+.viz-container {
+    margin-top: 20px;
+    text-align: center;
+}
+
+#viz-canvas {
+    display: block;
+    margin: 0 auto;
+    border: 2px solid #667eea;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    cursor: grab;
+    box-shadow: 
+        0 10px 30px rgba(102, 126, 234, 0.3),
+        0 0 20px rgba(102, 126, 234, 0.2);
+}
+
+#viz-canvas:active {
+    cursor: grabbing;
+}
+
+.viz-hint {
+    color: #888;
+    font-size: 12px;
+    margin-top: 10px;
+    text-align: center;
+}
