@@ -1,0 +1,37 @@
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+  background: #1a1a2e;
+  border-bottom: 2px solid #16213e;
+}
+
+.header-title {
+  margin: 0;
+  font-size: 1.5rem;
+  color: #e94560;
+}
+
+.header-controls {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.mode-btn {
+  padding: 0.5rem 1rem;
+  border: none;
+  background: #16213e;
+  color: #eee;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: background 0.2s;
+}
+
+.mode-btn:hover {
+  background: #0f3460;
+}
+
+.mode-btn.active {
+  background: #e94560;
+}

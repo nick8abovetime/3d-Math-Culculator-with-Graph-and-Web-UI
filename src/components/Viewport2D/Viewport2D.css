@@ -1,0 +1,20 @@
+.viewport2d {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  background: #0a0a14;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.viewport2d canvas {
+  border: 1px solid #16213e;
+}
+
+.viewport-placeholder {
+  position: absolute;
+  color: #666;
+  font-size: 1.25rem;
+  text-align: center;
+}
