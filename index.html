@@ -13,6 +13,7 @@
         <div class="mode-tabs">
             <button class="mode-tab active" data-mode="expression">Expression</button>
             <button class="mode-tab" data-mode="vector">3D Vector</button>
+            <button class="mode-tab" data-mode="visualize">3D View</button>
         </div>
         <div class="calculator">
             <div class="input-group expression-mode">
@@ -48,6 +49,29 @@
                         <option value="distance">Distance between A and B</option>
                         <option value="angle">Angle between A and B (degrees)</option>
                     </select>
+                </div>
+            </div>
+            <div class="visualize-mode" style="display: none;">
+                <div class="input-group">
+                    <label>Vector A (x, y, z)</label>
+                    <div class="vector-inputs">
+                        <input type="number" id="viz-vec-a-x" placeholder="x" step="any" value="3">
+                        <input type="number" id="viz-vec-a-y" placeholder="y" step="any" value="4">
+                        <input type="number" id="viz-vec-a-z" placeholder="z" step="any" value="0">
+                    </div>
+                </div>
+                <div class="input-group">
+                    <label>Vector B (x, y, z) <span class="optional">(optional)</span></label>
+                    <div class="vector-inputs">
+                        <input type="number" id="viz-vec-b-x" placeholder="x" step="any" value="0">
+                        <input type="number" id="viz-vec-b-y" placeholder="y" step="any" value="3">
+                        <input type="number" id="viz-vec-b-z" placeholder="z" step="any" value="2">
+                    </div>
+                </div>
+                <button id="update-viz-btn">Update View</button>
+                <div class="viz-container">
+                    <canvas id="viz-canvas" width="500" height="400"></canvas>
+                    <p class="viz-hint">Drag to rotate • Scroll to zoom</p>
                 </div>
             </div>
             <button id="calculate-btn">Calculate</button>

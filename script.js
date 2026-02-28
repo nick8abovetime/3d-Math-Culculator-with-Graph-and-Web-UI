@@ -18,9 +18,16 @@ document.addEventListener('DOMContentLoaded', () => {
             if (currentMode === 'expression') {
                 expressionMode.style.display = 'flex';
                 vectorMode.style.display = 'none';
-            } else {
+                visualizeMode.style.display = 'none';
+            } else if (currentMode === 'vector') {
                 expressionMode.style.display = 'none';
                 vectorMode.style.display = 'block';
+                visualizeMode.style.display = 'none';
+            } else {
+                expressionMode.style.display = 'none';
+                vectorMode.style.display = 'none';
+                visualizeMode.style.display = 'block';
+                drawVisualization();
             }
             resultOutput.textContent = '-';
             errorMessage.textContent = '';
@@ -321,4 +328,176 @@ document.addEventListener('DOMContentLoaded', () => {
             drawGraph();
         }
     });
+
+    const visualizeMode = document.querySelector('.visualize-mode');
+    const vizCanvas = document.getElementById('viz-canvas');
+    const vizCtx = vizCanvas.getContext('2d');
+    const updateVizBtn = document.getElementById('update-viz-btn');
+
+    let rotationX = 0.3;
+    let rotationY = 0.5;
+    let zoom = 40;
+    let isDragging = false;
+    let lastMouseX = 0;
+    let lastMouseY = 0;
+
+    function project(x, y, z) {
+        const cosX = Math.cos(rotationX);
+        const sinX = Math.sin(rotationX);
+        const cosY = Math.cos(rotationY);
+        const sinY = Math.sin(rotationY);
+
+        let y1 = y * cosX - z * sinX;
+        let z1 = y * sinX + z * cosX;
+        let x1 = x * cosY - z1 * sinY;
+        let z2 = x * sinY + z1 * cosY;
+
+        const scale = zoom;
+        return {
+            x: vizCanvas.width / 2 + x1 * scale,
+            y: vizCanvas.height / 2 - y1 * scale,
+            z: z2
+        };
+    }
+
+    function drawAxis() {
+        const axisLength = 5;
+        const origin = { x: 0, y: 0, z: 0 };
+
+        vizCtx.lineWidth = 1;
+
+        const xEnd = project(axisLength, 0, 0);
+        vizCtx.strokeStyle = '#e74c3c';
+        vizCtx.beginPath();
+        vizCtx.moveTo(origin.x, origin.y);
+        vizCtx.lineTo(xEnd.x, xEnd.y);
+        vizCtx.stroke();
+        vizCtx.fillStyle = '#e74c3c';
+        vizCtx.fillText('X', xEnd.x + 5, xEnd.y);
+
+        const yEnd = project(0, axisLength, 0);
+        vizCtx.strokeStyle = '#27ae60';
+        vizCtx.beginPath();
+        vizCtx.moveTo(origin.x, origin.y);
+        vizCtx.lineTo(yEnd.x, yEnd.y);
+        vizCtx.stroke();
+        vizCtx.fillStyle = '#27ae60';
+        vizCtx.fillText('Y', yEnd.x + 5, yEnd.y);
+
+        const zEnd = project(0, 0, axisLength);
+        vizCtx.strokeStyle = '#3498db';
+        vizCtx.beginPath();
+        vizCtx.moveTo(origin.x, origin.y);
+        vizCtx.lineTo(zEnd.x, zEnd.y);
+        vizCtx.stroke();
+        vizCtx.fillStyle = '#3498db';
+        vizCtx.fillText('Z', zEnd.x + 5, zEnd.y);
+    }
+
+    function drawVector(x, y, z, color, label) {
+        const origin = project(0, 0, 0);
+        const end = project(x, y, z);
+
+        vizCtx.strokeStyle = color;
+        vizCtx.lineWidth = 3;
+        vizCtx.beginPath();
+        vizCtx.moveTo(origin.x, origin.y);
+        vizCtx.lineTo(end.x, end.y);
+        vizCtx.stroke();
+
+        const angle = Math.atan2(end.y - origin.y, end.x - origin.x);
+        const arrowSize = 10;
+        vizCtx.beginPath();
+        vizCtx.moveTo(end.x, end.y);
+        vizCtx.lineTo(
+            end.x - arrowSize * Math.cos(angle - Math.PI / 6),
+            end.y - arrowSize * Math.sin(angle - Math.PI / 6)
+        );
+        vizCtx.lineTo(
+            end.x - arrowSize * Math.cos(angle + Math.PI / 6),
+            end.y - arrowSize * Math.sin(angle + Math.PI / 6)
+        );
+        vizCtx.closePath();
+        vizCtx.fillStyle = color;
+        vizCtx.fill();
+
+        vizCtx.fillStyle = color;
+        vizCtx.font = '14px sans-serif';
+        vizCtx.fillText(label, end.x + 8, end.y);
+    }
+
+    function drawGrid() {
+        vizCtx.strokeStyle = 'rgba(200, 200, 200, 0.3)';
+        vizCtx.lineWidth = 1;
+
+        for (let i = -5; i <= 5; i++) {
+            const start = project(i, 0, -5);
+            const end = project(i, 0, 5);
+            vizCtx.beginPath();
+            vizCtx.moveTo(start.x, start.y);
+            vizCtx.lineTo(end.x, end.y);
+            vizCtx.stroke();
+
+            const startY = project(-5, 0, i);
+            const endY = project(5, 0, i);
+            vizCtx.beginPath();
+            vizCtx.moveTo(startY.x, startY.y);
+            vizCtx.lineTo(endY.x, endY.y);
+            vizCtx.stroke();
+        }
+    }
+
+    function drawVisualization() {
+        const ax = parseFloat(document.getElementById('viz-vec-a-x').value) || 0;
+        const ay = parseFloat(document.getElementById('viz-vec-a-y').value) || 0;
+        const az = parseFloat(document.getElementById('viz-vec-a-z').value) || 0;
+        const bx = parseFloat(document.getElementById('viz-vec-b-x').value) || 0;
+        const by = parseFloat(document.getElementById('viz-vec-b-y').value) || 0;
+        const bz = parseFloat(document.getElementById('viz-vec-b-z').value) || 0;
+
+        vizCtx.clearRect(0, 0, vizCanvas.width, vizCanvas.height);
+        drawGrid();
+        drawAxis();
+        drawVector(ax, ay, az, '#667eea', 'A');
+        if (bx !== 0 || by !== 0 || bz !== 0) {
+            drawVector(bx, by, bz, '#f5576c', 'B');
+        }
+    }
+
+    vizCanvas.addEventListener('mousedown', (e) => {
+        isDragging = true;
+        lastMouseX = e.clientX;
+        lastMouseY = e.clientY;
+    });
+
+    vizCanvas.addEventListener('mousemove', (e) => {
+        if (isDragging) {
+            const deltaX = e.clientX - lastMouseX;
+            const deltaY = e.clientY - lastMouseY;
+            rotationY += deltaX * 0.01;
+            rotationX += deltaY * 0.01;
+            lastMouseX = e.clientX;
+            lastMouseY = e.clientY;
+            drawVisualization();
+        }
+    });
+
+    vizCanvas.addEventListener('mouseup', () => {
+        isDragging = false;
+    });
+
+    vizCanvas.addEventListener('mouseleave', () => {
+        isDragging = false;
+    });
+
+    vizCanvas.addEventListener('wheel', (e) => {
+        e.preventDefault();
+        zoom += e.deltaY * -0.05;
+        zoom = Math.max(10, Math.min(100, zoom));
+        drawVisualization();
+    });
+
+    updateVizBtn.addEventListener('click', drawVisualization);
+
+    drawVisualization();
 });
