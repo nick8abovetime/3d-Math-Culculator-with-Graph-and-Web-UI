@@ -11,16 +11,20 @@
 <body>
     <div class="container">
         <h1>3D Math Calculator</h1>
-<<<<<<< Updated upstream
+        
         <div class="mode-tabs">
             <button class="mode-tab active" data-mode="expression">Expression</button>
             <button class="mode-tab" data-mode="vector">3D Vector</button>
+            <button class="mode-tab" data-mode="graph">2D Graph</button>
+            <button class="mode-tab" data-mode="surface">3D Surface</button>
         </div>
+        
         <div class="calculator">
             <div class="input-group expression-mode">
                 <label for="expression">Enter Expression</label>
                 <input type="text" id="expression" placeholder="e.g., 2+2, sqrt(16), sin(pi/2)">
             </div>
+            
             <div class="vector-mode" style="display: none;">
                 <div class="input-group">
                     <label>Vector A (x, y, z)</label>
@@ -52,68 +56,48 @@
                     </select>
                 </div>
             </div>
-            <button id="calculate-btn">Calculate</button>
-            <div class="result">
-                <label>Result</label>
-                <output id="result-output">-</output>
-=======
-        
-        <div class="calculator">
-            <div class="tabs">
-                <button class="tab-btn active" data-tab="2d">2D Calculator</button>
-                <button class="tab-btn" data-tab="3d">3D Graphing</button>
+            
+            <div class="graph-mode" style="display: none;">
+                <div class="graph-inputs">
+                    <div class="input-group">
+                        <label for="graph-function">Function f(x)</label>
+                        <input type="text" id="graph-function" placeholder="e.g., sin(x), x^2, sqrt(x)">
+                    </div>
+                    <div class="range-inputs">
+                        <div class="input-group">
+                            <label for="x-min">X Min</label>
+                            <input type="number" id="x-min" value="-10" step="1">
+                        </div>
+                        <div class="input-group">
+                            <label for="x-max">X Max</label>
+                            <input type="number" id="x-max" value="10" step="1">
+                        </div>
+                    </div>
+                </div>
+                <canvas id="graph-canvas" width="600" height="400"></canvas>
+                <div class="error" id="graph-error"></div>
             </div>
             
-            <div class="tab-content active" id="2d-tab">
-                <div class="input-group">
-                    <label for="expression">Enter Expression</label>
-                    <input type="text" id="expression" placeholder="e.g., 2+2, sqrt(16), sin(pi/2)">
-                </div>
-                <button id="calculate-btn">Calculate</button>
-                <div class="result">
-                    <label>Result</label>
-                    <output id="result-output">-</output>
-                </div>
-                <div class="error" id="error-message"></div>
-            </div>
-            
-            <div class="tab-content" id="3d-tab">
+            <div class="surface-mode" style="display: none;">
                 <div class="input-group">
                     <label for="3d-function">Enter Function z = f(x, y)</label>
                     <input type="text" id="3d-function" placeholder="e.g., sin(x) * cos(y), x^2 + y^2">
                 </div>
                 <div class="graph-controls">
-                    <button id="graph-btn">Generate Graph</button>
+                    <button id="surface-graph-btn">Generate Surface</button>
                     <button id="rotate-btn">Auto Rotate</button>
                     <button id="reset-camera-btn">Reset View</button>
                 </div>
                 <div id="3d-canvas-container"></div>
                 <div class="error" id="3d-error-message"></div>
->>>>>>> Stashed changes
             </div>
-        </div>
-        
-        <div class="graph-section">
-            <h2>2D Graphing</h2>
-            <div class="graph-inputs">
-                <div class="input-group">
-                    <label for="graph-function">Function f(x)</label>
-                    <input type="text" id="graph-function" placeholder="e.g., sin(x), x^2, sqrt(x)">
-                </div>
-                <div class="range-inputs">
-                    <div class="input-group">
-                        <label for="x-min">X Min</label>
-                        <input type="number" id="x-min" value="-10" step="1">
-                    </div>
-                    <div class="input-group">
-                        <label for="x-max">X Max</label>
-                        <input type="number" id="x-max" value="10" step="1">
-                    </div>
-                </div>
-                <button id="graph-btn">Graph</button>
+            
+            <button id="calculate-btn">Calculate</button>
+            <div class="result">
+                <label>Result</label>
+                <output id="result-output">-</output>
             </div>
-            <canvas id="graph-canvas" width="600" height="400"></canvas>
-            <div class="error" id="graph-error"></div>
+            <div class="error" id="error-message"></div>
         </div>
     </div>
     <script src="script.js"></script>

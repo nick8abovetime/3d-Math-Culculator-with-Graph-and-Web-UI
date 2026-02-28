@@ -6,6 +6,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const modeTabs = document.querySelectorAll('.mode-tab');
     const expressionMode = document.querySelector('.expression-mode');
     const vectorMode = document.querySelector('.vector-mode');
+    const graphMode = document.querySelector('.graph-mode');
+    const surfaceMode = document.querySelector('.surface-mode');
 
     let currentMode = 'expression';
 
@@ -15,39 +17,30 @@ document.addEventListener('DOMContentLoaded', () => {
             tab.classList.add('active');
             currentMode = tab.dataset.mode;
             
+            expressionMode.style.display = 'none';
+            vectorMode.style.display = 'none';
+            graphMode.style.display = 'none';
+            surfaceMode.style.display = 'none';
+            
             if (currentMode === 'expression') {
                 expressionMode.style.display = 'flex';
-                vectorMode.style.display = 'none';
-            } else {
-                expressionMode.style.display = 'none';
+            } else if (currentMode === 'vector') {
                 vectorMode.style.display = 'block';
+            } else if (currentMode === 'graph') {
+                graphMode.style.display = 'block';
+            } else if (currentMode === 'surface') {
+                surfaceMode.style.display = 'block';
+                if (!threeApp) initThreeJS();
             }
             resultOutput.textContent = '-';
             errorMessage.textContent = '';
         });
     });
 
-    const tabBtns = document.querySelectorAll('.tab-btn');
-    const tabContents = document.querySelectorAll('.tab-content');
-
-    tabBtns.forEach(btn => {
-        btn.addEventListener('click', () => {
-            const tabId = btn.dataset.tab;
-            tabBtns.forEach(b => b.classList.remove('active'));
-            tabContents.forEach(c => c.classList.remove('active'));
-            btn.classList.add('active');
-            document.getElementById(`${tabId}-tab`).classList.add('active');
-            
-            if (tabId === '3d' && !threeApp) {
-                initThreeJS();
-            }
-        });
-    });
-
     function calculate() {
         if (currentMode === 'expression') {
             calculateExpression();
-        } else {
+        } else if (currentMode === 'vector') {
             calculateVector();
         }
     }
@@ -177,11 +170,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     expressionInput.focus();
 
-<<<<<<< Updated upstream
     const graphFunctionInput = document.getElementById('graph-function');
     const xMinInput = document.getElementById('x-min');
     const xMaxInput = document.getElementById('x-max');
-    const graphBtn = document.getElementById('graph-btn');
+    const graph2dBtn = document.getElementById('graph-btn');
     const canvas = document.getElementById('graph-canvas');
     const graphError = document.getElementById('graph-error');
     const ctx = canvas.getContext('2d');
@@ -320,7 +312,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return max === -Infinity ? 10 : max;
     }
 
-    graphBtn.addEventListener('click', drawGraph);
+    graph2dBtn.addEventListener('click', drawGraph);
     
     graphFunctionInput.addEventListener('keypress', (e) => {
         if (e.key === 'Enter') {
@@ -339,13 +331,12 @@ document.addEventListener('DOMContentLoaded', () => {
             drawGraph();
         }
     });
-});
-=======
+
     let threeApp = null;
 
     function initThreeJS() {
         const container = document.getElementById('3d-canvas-container');
-        const graphBtn = document.getElementById('graph-btn');
+        const surfaceGraphBtn = document.getElementById('surface-graph-btn');
         const rotateBtn = document.getElementById('rotate-btn');
         const resetCameraBtn = document.getElementById('reset-camera-btn');
         const errorMessage = document.getElementById('3d-error-message');
@@ -441,7 +432,7 @@ document.addEventListener('DOMContentLoaded', () => {
             scene.add(mesh);
         }
 
-        graphBtn.addEventListener('click', () => {
+        surfaceGraphBtn.addEventListener('click', () => {
             const funcStr = document.getElementById('3d-function').value.trim();
             if (!funcStr) {
                 errorMessage.textContent = 'Please enter a function';
@@ -520,4 +511,3 @@ document.addEventListener('DOMContentLoaded', () => {
         threeApp = { scene, camera, renderer };
     }
 });
->>>>>>> Stashed changes

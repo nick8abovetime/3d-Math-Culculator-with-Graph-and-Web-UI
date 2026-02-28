@@ -47,16 +47,18 @@ h1 {
     display: flex;
     gap: 10px;
     margin-bottom: 20px;
+    flex-wrap: wrap;
 }
 
 .mode-tab {
     flex: 1;
+    min-width: 100px;
     background: #e0e0e0;
     color: #555;
     border: none;
-    padding: 10px 16px;
+    padding: 10px 12px;
     border-radius: 8px;
-    font-size: 14px;
+    font-size: 13px;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.2s ease;
@@ -72,44 +74,6 @@ h1 {
 }
 
 .calculator {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-}
-
-.tabs {
-    display: flex;
-    gap: 10px;
-    margin-bottom: 20px;
-}
-
-.tab-btn {
-    flex: 1;
-    background: #f0f0f0;
-    color: #555;
-    border: none;
-    padding: 12px 20px;
-    border-radius: 8px;
-    font-size: 14px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-.tab-btn.active {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-}
-
-.tab-btn:hover:not(.active) {
-    background: #e0e0e0;
-}
-
-.tab-content {
-    display: none;
-}
-
-.tab-content.active {
     display: flex;
     flex-direction: column;
     gap: 20px;
@@ -146,6 +110,7 @@ input[type="text"]:focus,
 input[type="number"]:focus {
     outline: none;
     border-color: #667eea;
+    box-shadow: 0 0 20px rgba(102, 126, 234, 0.3);
 }
 
 .vector-inputs {
@@ -254,20 +219,6 @@ button:active {
     display: none;
 }
 
-<<<<<<< Updated upstream
-.graph-section {
-    margin-top: 40px;
-    padding-top: 30px;
-    border-top: 2px solid #e0e0e0;
-}
-
-.graph-section h2 {
-    color: #333;
-    text-align: center;
-    margin-bottom: 20px;
-    font-size: 22px;
-}
-
 .graph-inputs {
     display: flex;
     flex-direction: column;
@@ -284,20 +235,6 @@ button:active {
     flex: 1;
 }
 
-input[type="number"] {
-    padding: 14px 16px;
-    border: 2px solid #e0e0e0;
-    border-radius: 8px;
-    font-size: 16px;
-    transition: border-color 0.3s ease;
-    width: 100%;
-}
-
-input[type="number"]:focus {
-    outline: none;
-    border-color: #667eea;
-}
-
 #graph-canvas {
     display: block;
     margin: 0 auto;
@@ -310,7 +247,7 @@ input[type="number"]:focus {
     text-align: center;
     margin-top: 10px;
 }
-=======
+
 .graph-controls {
     display: flex;
     gap: 10px;
@@ -335,4 +272,3 @@ input[type="number"]:focus {
 #3d-canvas-container canvas {
     display: block;
 }
->>>>>>> Stashed changes
