@@ -598,6 +598,10 @@ document.addEventListener('DOMContentLoaded', () => {
         directionalLight.position.set(10, 10, 10);
         scene.add(directionalLight);
 
+        const pointLight = new THREE.PointLight(0xffffff, 0.5);
+        pointLight.position.set(-5, 8, 5);
+        scene.add(pointLight);
+
         const axesHelper = new THREE.AxesHelper(5);
         scene.add(axesHelper);
 
@@ -664,7 +668,9 @@ document.addEventListener('DOMContentLoaded', () => {
             const material = new THREE.MeshPhongMaterial({ 
                 vertexColors: true,
                 side: THREE.DoubleSide,
-                flatShading: false
+                flatShading: false,
+                shininess: 80,
+                specular: 0x444444
             });
 
             mesh = new THREE.Mesh(geometry, material);
