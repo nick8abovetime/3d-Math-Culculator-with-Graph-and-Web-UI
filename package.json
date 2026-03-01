@@ -3,6 +3,8 @@
   "version": "1.0.0",
   "description": "3D Math Calculator with E2E tests",
   "scripts": {
+    "test": "python3 tests/test_spec.py",
+    "test:all": "python3 tests/test_spec.py && python3 -m pytest e2e/",
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui"
   },
