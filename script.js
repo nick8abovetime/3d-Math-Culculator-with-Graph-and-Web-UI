@@ -60,7 +60,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 document.querySelector('.matrix-mode').style.display = 'block';
                 initMatrixInputs();
             }
-            }
             resultOutput.textContent = '-';
             errorMessage.textContent = '';
         });
@@ -71,6 +70,8 @@ document.addEventListener('DOMContentLoaded', () => {
             calculateExpression();
         } else if (currentMode === 'vector') {
             calculateVector();
+        } else if (currentMode === 'graph') {
+            drawGraph();
         }
     }
 
@@ -412,7 +413,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const graphFunctionInput = document.getElementById('graph-function');
     const xMinInput = document.getElementById('x-min');
     const xMaxInput = document.getElementById('x-max');
-    const graph2dBtn = document.getElementById('graph-btn');
     const canvas = document.getElementById('graph-canvas');
     const graphError = document.getElementById('graph-error');
     const ctx = canvas.getContext('2d');
@@ -551,8 +551,6 @@ document.addEventListener('DOMContentLoaded', () => {
         return max === -Infinity ? 10 : max;
     }
 
-    graph2dBtn.addEventListener('click', drawGraph);
-    
     graphFunctionInput.addEventListener('keypress', (e) => {
         if (e.key === 'Enter') {
             drawGraph();
