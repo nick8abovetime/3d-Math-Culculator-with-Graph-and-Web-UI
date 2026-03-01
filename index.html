@@ -19,6 +19,7 @@
             <button class="mode-tab" data-mode="surface">3D Surface</button>
             <button class="mode-tab" data-mode="visualize">3D View</button>
             <button class="mode-tab" data-mode="matrix">Matrix</button>
+            <button class="mode-tab" data-mode="intent">Intent</button>
         </div>
         
         <div class="calculator">
@@ -118,6 +119,30 @@
                     <p class="viz-hint">Drag to rotate • Scroll to zoom</p>
                 </div>
             </div>
+            <div class="intent-mode" style="display: none;">
+                <div class="input-group">
+                    <label for="intent-input">Natural Language Input</label>
+                    <input type="text" id="intent-input" placeholder="e.g., plot sin(x), dot [1,2,3] and [4,5,6], magnitude of [3,4]">
+                </div>
+                <div class="intent-help">
+                    <h4>Examples:</h4>
+                    <ul>
+                        <li><code>plot sin(x)</code> - Plot 2D graph</li>
+                        <li><code>plot x^2 from x=-5 to x=5</code> - Plot with range</li>
+                        <li><code>surface sin(x)*cos(y)</code> - Plot 3D surface</li>
+                        <li><code>dot [1,2,3] and [4,5,6]</code> - Vector dot product</li>
+                        <li><code>cross [1,0,0] and [0,1,0]</code> - Vector cross product</li>
+                        <li><code>add [1,2] and [3,4]</code> - Add vectors</li>
+                        <li><code>magnitude of [3,4,0]</code> - Vector magnitude</li>
+                        <li><code>normalize [1,1,1]</code> - Normalize vector</li>
+                        <li><code>distance [0,0,0] and [3,4,0]</code> - Distance between vectors</li>
+                        <li><code>angle [1,0] and [0,1]</code> - Angle between vectors</li>
+                        <li><code>det 3x3 1,0,0,0,1,0,0,0,1</code> - Matrix determinant</li>
+                        <li><code>inverse 2x3 1,2,3,4,5,6</code> - Matrix inverse</li>
+                    </ul>
+                </div>
+            </div>
+            
             <div class="matrix-mode" style="display: none;">
                 <div class="input-group">
                     <label for="matrix-size">Matrix Size</label>
@@ -161,6 +186,7 @@
             <div class="error" id="error-message"></div>
         </div>
     </div>
+    <script src="intent-parser.js"></script>
     <script src="script.js"></script>
 </body>
 </html>
