@@ -129,114 +129,115 @@ def generate_colors(z_values, min_z: float = -5, max_z: float = 5):
     return colors
 
 
-print("=" * 60)
-print("3D Surface Tests")
-print("=" * 60)
-print()
+if __name__ == "__main__":
+    print("=" * 60)
+    print("3D Surface Tests")
+    print("=" * 60)
+    print()
 
-print("--- Grid Generation Tests ---")
-test(
-    "Grid generates correct number of points",
-    lambda: assert_equal(
-        len(generate_grid_points(10, 5)), 36, "36 points for 5 segments"
-    ),
-)
+    print("--- Grid Generation Tests ---")
+    test(
+        "Grid generates correct number of points",
+        lambda: assert_equal(
+            len(generate_grid_points(10, 5)), 36, "36 points for 5 segments"
+        ),
+    )
 
-points = generate_grid_points(10, 5)
-test("First point x is at -size/2", lambda: assert_equal(points[0][0], -5))
-test("First point y is at -size/2", lambda: assert_equal(points[0][1], -5))
-test("Last point x is at size/2", lambda: assert_equal(points[-1][0], 5))
-test("Last point y is at size/2", lambda: assert_equal(points[-1][1], 5))
+    points = generate_grid_points(10, 5)
+    test("First point x is at -size/2", lambda: assert_equal(points[0][0], -5))
+    test("First point y is at -size/2", lambda: assert_equal(points[0][1], -5))
+    test("Last point x is at size/2", lambda: assert_equal(points[-1][0], 5))
+    test("Last point y is at size/2", lambda: assert_equal(points[-1][1], 5))
 
-print()
-print("--- Vertex Creation Tests ---")
-test(
-    "Vertex generation for x + y",
-    lambda: assert_equal(
-        len(generate_vertices("x + y", 10, 3)), 16, "16 vertices for 3 segments"
-    ),
-)
+    print()
+    print("--- Vertex Creation Tests ---")
+    test(
+        "Vertex generation for x + y",
+        lambda: assert_equal(
+            len(generate_vertices("x + y", 10, 3)), 16, "16 vertices for 3 segments"
+        ),
+    )
 
-verts = generate_vertices("x + y", 10, 3)
-test("First vertex x is at -5", lambda: assert_equal(verts[0][0], -5))
-test(
-    "First vertex z is -10 (x+y where x=-5,y=-5)",
-    lambda: assert_equal(verts[0][1], -10, tolerance=0.001),
-)
-test("First vertex y is at -5", lambda: assert_equal(verts[0][2], -5))
+    verts = generate_vertices("x + y", 10, 3)
+    test("First vertex x is at -5", lambda: assert_equal(verts[0][0], -5))
+    test(
+        "First vertex z is -10 (x+y where x=-5,y=-5)",
+        lambda: assert_equal(verts[0][1], -10, tolerance=0.001),
+    )
+    test("First vertex y is at -5", lambda: assert_equal(verts[0][2], -5))
 
-test(
-    "Vertex for x^2 + y^2 at x=3,y=3",
-    lambda: assert_equal(evaluate_expr("x**2 + y**2", 3, 3), 18, tolerance=0.001),
-)
+    test(
+        "Vertex for x^2 + y^2 at x=3,y=3",
+        lambda: assert_equal(evaluate_expr("x**2 + y**2", 3, 3), 18, tolerance=0.001),
+    )
 
-print()
-print("--- Index Creation Tests ---")
-test(
-    "Index generation for 4 segments",
-    lambda: assert_equal(
-        len(generate_indices(4)), 96, "96 indices for 4 segments (32 triangles)"
-    ),
-)
+    print()
+    print("--- Index Creation Tests ---")
+    test(
+        "Index generation for 4 segments",
+        lambda: assert_equal(
+            len(generate_indices(4)), 96, "96 indices for 4 segments (32 triangles)"
+        ),
+    )
 
-indices = generate_indices(4)
-test("First triangle starts at vertex 0", lambda: assert_equal(indices[0], 0))
-test("First triangle second vertex is 1", lambda: assert_equal(indices[1], 1))
-test("First triangle third vertex is 5", lambda: assert_equal(indices[2], 5))
+    indices = generate_indices(4)
+    test("First triangle starts at vertex 0", lambda: assert_equal(indices[0], 0))
+    test("First triangle second vertex is 1", lambda: assert_equal(indices[1], 1))
+    test("First triangle third vertex is 5", lambda: assert_equal(indices[2], 5))
 
-print()
-print("--- Z-Clamping Tests ---")
-test("Infinity clamps to 0", lambda: assert_equal(clamp_z(float("inf")), 0))
-test("-Infinity clamps to 0", lambda: assert_equal(clamp_z(float("-inf")), 0))
-test("NaN clamps to 0", lambda: assert_equal(clamp_z(float("nan")), 0))
-test("100 clamps to 5", lambda: assert_equal(clamp_z(100), 5))
-test("-100 clamps to -5", lambda: assert_equal(clamp_z(-100), -5))
-test("5 stays 5", lambda: assert_equal(clamp_z(5), 5))
-test("-5 stays -5", lambda: assert_equal(clamp_z(-5), -5))
-test("0 stays 0", lambda: assert_equal(clamp_z(0), 0))
+    print()
+    print("--- Z-Clamping Tests ---")
+    test("Infinity clamps to 0", lambda: assert_equal(clamp_z(float("inf")), 0))
+    test("-Infinity clamps to 0", lambda: assert_equal(clamp_z(float("-inf")), 0))
+    test("NaN clamps to 0", lambda: assert_equal(clamp_z(float("nan")), 0))
+    test("100 clamps to 5", lambda: assert_equal(clamp_z(100), 5))
+    test("-100 clamps to -5", lambda: assert_equal(clamp_z(-100), -5))
+    test("5 stays 5", lambda: assert_equal(clamp_z(5), 5))
+    test("-5 stays -5", lambda: assert_equal(clamp_z(-5), -5))
+    test("0 stays 0", lambda: assert_equal(clamp_z(0), 0))
 
-print()
-print("--- Color Generation Tests ---")
-z_values = [-5, -2.5, 0, 2.5, 5]
-colors = generate_colors(z_values)
-test("Generates 15 color values", lambda: assert_equal(len(colors), 15))
+    print()
+    print("--- Color Generation Tests ---")
+    z_values = [-5, -2.5, 0, 2.5, 5]
+    colors = generate_colors(z_values)
+    test("Generates 15 color values", lambda: assert_equal(len(colors), 15))
 
-test("z=-5: red component is 0", lambda: assert_equal(colors[0], 0))
-test("z=-2.5: red component is 0.25", lambda: assert_equal(colors[3], 0.25))
-test("z=0: red component is 0.5", lambda: assert_equal(colors[6], 0.5))
-test("z=2.5: red component is 0.75", lambda: assert_equal(colors[9], 0.75))
-test("z=5: red component is 1", lambda: assert_equal(colors[12], 1))
+    test("z=-5: red component is 0", lambda: assert_equal(colors[0], 0))
+    test("z=-2.5: red component is 0.25", lambda: assert_equal(colors[3], 0.25))
+    test("z=0: red component is 0.5", lambda: assert_equal(colors[6], 0.5))
+    test("z=2.5: red component is 0.75", lambda: assert_equal(colors[9], 0.75))
+    test("z=5: red component is 1", lambda: assert_equal(colors[12], 1))
 
-test("z=-5: blue component is 1", lambda: assert_equal(colors[2], 1))
-test("z=5: blue component is 0", lambda: assert_equal(colors[14], 0))
+    test("z=-5: blue component is 1", lambda: assert_equal(colors[2], 1))
+    test("z=5: blue component is 0", lambda: assert_equal(colors[14], 0))
 
-print()
-print("--- Error Handling Tests ---")
-test(
-    "Invalid expression throws error",
-    lambda: assert_true(
-        evaluate_expr("x +", 1, 1) != evaluate_expr("x +", 1, 1)
-        or math.isnan(evaluate_expr("x +", 1, 1))
-    ),
-)
+    print()
+    print("--- Error Handling Tests ---")
+    test(
+        "Invalid expression throws error",
+        lambda: assert_true(
+            evaluate_expr("x +", 1, 1) != evaluate_expr("x +", 1, 1)
+            or math.isnan(evaluate_expr("x +", 1, 1))
+        ),
+    )
 
-test(
-    "Division by zero produces non-finite",
-    lambda: assert_true(not math.isfinite(evaluate_expr("x / y", 1, 0))),
-)
+    test(
+        "Division by zero produces non-finite",
+        lambda: assert_true(not math.isfinite(evaluate_expr("x / y", 1, 0))),
+    )
 
-test(
-    "log(-1) produces non-finite",
-    lambda: assert_true(not math.isfinite(evaluate_expr("log(x)", -1, 0))),
-)
+    test(
+        "log(-1) produces non-finite",
+        lambda: assert_true(not math.isfinite(evaluate_expr("log(x)", -1, 0))),
+    )
 
-print()
-print("=" * 60)
-print(f"Results: {passed} passed, {failed} failed")
-print("=" * 60)
+    print()
+    print("=" * 60)
+    print(f"Results: {passed} passed, {failed} failed")
+    print("=" * 60)
 
-if failed > 0:
-    sys.exit(1)
-else:
-    print(f"{GREEN}All tests passed!{RESET}")
-    sys.exit(0)
+    if failed > 0:
+        sys.exit(1)
+    else:
+        print(f"{GREEN}All tests passed!{RESET}")
+        sys.exit(0)

@@ -147,172 +147,182 @@ def scale_matrix(m, scalar):
     return [[val * scalar for val in row] for row in m]
 
 
-print("=" * 60)
-print("Matrix UI Tests")
-print("=" * 60)
-print()
+if __name__ == "__main__":
+    print("=" * 60)
+    print("Matrix UI Tests")
+    print("=" * 60)
+    print()
 
-print("Testing Matrix Operations UI Functions")
-print("-" * 40)
+    print("Testing Matrix Operations UI Functions")
+    print("-" * 40)
 
-test(
-    "addMatrices 2x2",
-    lambda: assert_true(
-        arrays_equal(
-            add_matrices([[1, 2], [3, 4]], [[5, 6], [7, 8]]), [[6, 8], [10, 12]]
-        )
-    ),
-)
+    test(
+        "addMatrices 2x2",
+        lambda: assert_true(
+            arrays_equal(
+                add_matrices([[1, 2], [3, 4]], [[5, 6], [7, 8]]), [[6, 8], [10, 12]]
+            )
+        ),
+    )
 
-test(
-    "subtractMatrices 2x2",
-    lambda: assert_true(
-        arrays_equal(
-            subtract_matrices([[5, 6], [7, 8]], [[1, 2], [3, 4]]), [[4, 4], [4, 4]]
-        )
-    ),
-)
+    test(
+        "subtractMatrices 2x2",
+        lambda: assert_true(
+            arrays_equal(
+                subtract_matrices([[5, 6], [7, 8]], [[1, 2], [3, 4]]), [[4, 4], [4, 4]]
+            )
+        ),
+    )
 
-test(
-    "multiplyMatrices 2x2",
-    lambda: assert_true(
-        arrays_equal(
-            multiply_matrices([[1, 2], [3, 4]], [[5, 6], [7, 8]]), [[19, 22], [43, 50]]
-        )
-    ),
-)
+    test(
+        "multiplyMatrices 2x2",
+        lambda: assert_true(
+            arrays_equal(
+                multiply_matrices([[1, 2], [3, 4]], [[5, 6], [7, 8]]),
+                [[19, 22], [43, 50]],
+            )
+        ),
+    )
 
-test(
-    "determinant 2x2",
-    lambda: assert_true(abs(determinant([[1, 2], [3, 4]]) - (-2)) < 1e-6),
-)
+    test(
+        "determinant 2x2",
+        lambda: assert_true(abs(determinant([[1, 2], [3, 4]]) - (-2)) < 1e-6),
+    )
 
-test(
-    "determinant 3x3 singular",
-    lambda: assert_true(abs(determinant([[1, 2, 3], [4, 5, 6], [7, 8, 9]])) < 1e-6),
-)
+    test(
+        "determinant 3x3 singular",
+        lambda: assert_true(abs(determinant([[1, 2, 3], [4, 5, 6], [7, 8, 9]])) < 1e-6),
+    )
 
-test(
-    "determinant 3x3 non-singular",
-    lambda: assert_true(
-        abs(determinant([[1, 2, 3], [4, 5, 6], [7, 8, 10]]) - (-3)) < 1e-6
-    ),
-)
+    test(
+        "determinant 3x3 non-singular",
+        lambda: assert_true(
+            abs(determinant([[1, 2, 3], [4, 5, 6], [7, 8, 10]]) - (-3)) < 1e-6
+        ),
+    )
 
-test(
-    "transpose 2x3",
-    lambda: assert_true(
-        arrays_equal(transpose([[1, 2, 3], [4, 5, 6]]), [[1, 4], [2, 5], [3, 6]])
-    ),
-)
+    test(
+        "transpose 2x3",
+        lambda: assert_true(
+            arrays_equal(transpose([[1, 2, 3], [4, 5, 6]]), [[1, 4], [2, 5], [3, 6]])
+        ),
+    )
 
-test(
-    "transpose 2x2",
-    lambda: assert_true(arrays_equal(transpose([[1, 2], [3, 4]]), [[1, 3], [2, 4]])),
-)
+    test(
+        "transpose 2x2",
+        lambda: assert_true(
+            arrays_equal(transpose([[1, 2], [3, 4]]), [[1, 3], [2, 4]])
+        ),
+    )
 
-test(
-    "inverse 2x2",
-    lambda: assert_true(
-        arrays_equal(inverse([[4, 7], [2, 6]]), [[0.6, -0.7], [-0.2, 0.4]], 1e-6)
-    ),
-)
+    test(
+        "inverse 2x2",
+        lambda: assert_true(
+            arrays_equal(inverse([[4, 7], [2, 6]]), [[0.6, -0.7], [-0.2, 0.4]], 1e-6)
+        ),
+    )
 
-test(
-    "inverse 3x3",
-    lambda: assert_true(
-        arrays_equal(
-            inverse([[1, 2, 3], [0, 1, 4], [5, 6, 0]]),
-            [[-24, 18, 5], [20, -15, -4], [-5, 4, 1]],
-            1e-5,
-        )
-    ),
-)
+    test(
+        "inverse 3x3",
+        lambda: assert_true(
+            arrays_equal(
+                inverse([[1, 2, 3], [0, 1, 4], [5, 6, 0]]),
+                [[-24, 18, 5], [20, -15, -4], [-5, 4, 1]],
+                1e-5,
+            )
+        ),
+    )
 
-test(
-    "inverse of singular matrix returns null",
-    lambda: assert_null(inverse([[1, 2], [2, 4]])),
-)
+    test(
+        "inverse of singular matrix returns null",
+        lambda: assert_null(inverse([[1, 2], [2, 4]])),
+    )
 
-test(
-    "inverse of 1x1 matrix", lambda: assert_true(arrays_equal(inverse([[5]]), [[0.2]]))
-)
+    test(
+        "inverse of 1x1 matrix",
+        lambda: assert_true(arrays_equal(inverse([[5]]), [[0.2]])),
+    )
 
-test(
-    "scaleMatrix",
-    lambda: assert_true(
-        arrays_equal(scale_matrix([[1, 2], [3, 4]], 2), [[2, 4], [6, 8]])
-    ),
-)
+    test(
+        "scaleMatrix",
+        lambda: assert_true(
+            arrays_equal(scale_matrix([[1, 2], [3, 4]], 2), [[2, 4], [6, 8]])
+        ),
+    )
 
-test(
-    "scaleMatrix with fractional scalar",
-    lambda: assert_true(
-        arrays_equal(scale_matrix([[2, 4], [6, 8]], 0.5), [[1, 2], [3, 4]])
-    ),
-)
+    test(
+        "scaleMatrix with fractional scalar",
+        lambda: assert_true(
+            arrays_equal(scale_matrix([[2, 4], [6, 8]], 0.5), [[1, 2], [3, 4]])
+        ),
+    )
 
-test(
-    "adjoint 2x2",
-    lambda: assert_true(arrays_equal(adjoint([[1, 2], [3, 4]]), [[4, -2], [-3, 1]])),
-)
+    test(
+        "adjoint 2x2",
+        lambda: assert_true(
+            arrays_equal(adjoint([[1, 2], [3, 4]]), [[4, -2], [-3, 1]])
+        ),
+    )
 
-test(
-    "Matrix addition with zeros",
-    lambda: assert_true(
-        arrays_equal(add_matrices([[0, 0], [0, 0]], [[1, 2], [3, 4]]), [[1, 2], [3, 4]])
-    ),
-)
+    test(
+        "Matrix addition with zeros",
+        lambda: assert_true(
+            arrays_equal(
+                add_matrices([[0, 0], [0, 0]], [[1, 2], [3, 4]]), [[1, 2], [3, 4]]
+            )
+        ),
+    )
 
-test(
-    "Matrix subtraction resulting in negatives",
-    lambda: assert_true(
-        arrays_equal(
-            subtract_matrices([[1, 2], [3, 4]], [[5, 6], [7, 8]]), [[-4, -4], [-4, -4]]
-        )
-    ),
-)
+    test(
+        "Matrix subtraction resulting in negatives",
+        lambda: assert_true(
+            arrays_equal(
+                subtract_matrices([[1, 2], [3, 4]], [[5, 6], [7, 8]]),
+                [[-4, -4], [-4, -4]],
+            )
+        ),
+    )
 
-test(
-    "Multiply identity matrix",
-    lambda: assert_true(
-        arrays_equal(
-            multiply_matrices([[1, 0], [0, 1]], [[5, 6], [7, 8]]), [[5, 6], [7, 8]]
-        )
-    ),
-)
+    test(
+        "Multiply identity matrix",
+        lambda: assert_true(
+            arrays_equal(
+                multiply_matrices([[1, 0], [0, 1]], [[5, 6], [7, 8]]), [[5, 6], [7, 8]]
+            )
+        ),
+    )
 
-test(
-    "Multiply by zero matrix",
-    lambda: assert_true(
-        arrays_equal(
-            multiply_matrices([[0, 0], [0, 0]], [[5, 6], [7, 8]]), [[0, 0], [0, 0]]
-        )
-    ),
-)
+    test(
+        "Multiply by zero matrix",
+        lambda: assert_true(
+            arrays_equal(
+                multiply_matrices([[0, 0], [0, 0]], [[5, 6], [7, 8]]), [[0, 0], [0, 0]]
+            )
+        ),
+    )
 
-test(
-    "Determinant of identity matrix is 1",
-    lambda: assert_true(abs(determinant([[1, 0], [0, 1]]) - 1) < 1e-6),
-)
+    test(
+        "Determinant of identity matrix is 1",
+        lambda: assert_true(abs(determinant([[1, 0], [0, 1]]) - 1) < 1e-6),
+    )
 
-test(
-    "Determinant of zero matrix is 0",
-    lambda: assert_true(abs(determinant([[0, 0], [0, 0]])) < 1e-6),
-)
+    test(
+        "Determinant of zero matrix is 0",
+        lambda: assert_true(abs(determinant([[0, 0], [0, 0]])) < 1e-6),
+    )
 
-test(
-    "Determinant of scalar matrix n*I",
-    lambda: assert_true(abs(determinant([[3, 0], [0, 3]]) - 9) < 1e-6),
-)
+    test(
+        "Determinant of scalar matrix n*I",
+        lambda: assert_true(abs(determinant([[3, 0], [0, 3]]) - 9) < 1e-6),
+    )
 
-print()
-print("=" * 60)
-print(f"Results: {passed} passed, {failed} failed")
-print("=" * 60)
+    print()
+    print("=" * 60)
+    print(f"Results: {passed} passed, {failed} failed")
+    print("=" * 60)
 
-if failed > 0:
-    sys.exit(1)
-else:
-    print(f"{GREEN}All tests passed!{RESET}")
-    sys.exit(0)
+    if failed > 0:
+        sys.exit(1)
+    else:
+        print(f"{GREEN}All tests passed!{RESET}")
+        sys.exit(0)

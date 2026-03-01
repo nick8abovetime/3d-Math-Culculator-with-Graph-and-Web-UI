@@ -122,109 +122,112 @@ def get_y_max(expr: str, x_min: float, x_max: float) -> float:
     return max_val if max_val != float("-inf") else 10
 
 
-# Test cases
-print("=" * 60)
-print("2D Graph Tests")
-print("=" * 60)
-print()
+if __name__ == "__main__":
+    # Test cases
+    print("=" * 60)
+    print("2D Graph Tests")
+    print("=" * 60)
+    print()
 
-# Test 1: Linear function y = x
-test(
-    "getYMin: Linear function y = x on [-5, 5]",
-    lambda: assert_in_range(get_y_min("x", -5, 5), -5.1, -4.9),
-)
+    # Test 1: Linear function y = x
+    test(
+        "getYMin: Linear function y = x on [-5, 5]",
+        lambda: assert_in_range(get_y_min("x", -5, 5), -5.1, -4.9),
+    )
 
-test(
-    "getYMax: Linear function y = x on [-5, 5]",
-    lambda: assert_in_range(get_y_max("x", -5, 5), 4.9, 5.1),
-)
+    test(
+        "getYMax: Linear function y = x on [-5, 5]",
+        lambda: assert_in_range(get_y_max("x", -5, 5), 4.9, 5.1),
+    )
 
-# Test 2: Quadratic function y = x^2
-test(
-    "getYMin: Quadratic y = x^2 on [-3, 3]",
-    lambda: assert_in_range(get_y_min("x**2", -3, 3), -0.1, 0.1),
-)
+    # Test 2: Quadratic function y = x^2
+    test(
+        "getYMin: Quadratic y = x^2 on [-3, 3]",
+        lambda: assert_in_range(get_y_min("x**2", -3, 3), -0.1, 0.1),
+    )
 
-test(
-    "getYMax: Quadratic y = x^2 on [-3, 3]",
-    lambda: assert_in_range(get_y_max("x**2", -3, 3), 8.9, 9.1),
-)
+    test(
+        "getYMax: Quadratic y = x^2 on [-3, 3]",
+        lambda: assert_in_range(get_y_max("x**2", -3, 3), 8.9, 9.1),
+    )
 
-# Test 3: Sin function y = sin(x)
-test(
-    "getYMin: Sin function y = sin(x) on [0, 2*pi]",
-    lambda: assert_in_range(get_y_min("sin(x)", 0, 2 * math.pi), -1.1, -0.9),
-)
+    # Test 3: Sin function y = sin(x)
+    test(
+        "getYMin: Sin function y = sin(x) on [0, 2*pi]",
+        lambda: assert_in_range(get_y_min("sin(x)", 0, 2 * math.pi), -1.1, -0.9),
+    )
 
-test(
-    "getYMax: Sin function y = sin(x) on [0, 2*pi]",
-    lambda: assert_in_range(get_y_max("sin(x)", 0, 2 * math.pi), 0.9, 1.1),
-)
+    test(
+        "getYMax: Sin function y = sin(x) on [0, 2*pi]",
+        lambda: assert_in_range(get_y_max("sin(x)", 0, 2 * math.pi), 0.9, 1.1),
+    )
 
-# Test 4: Constant function y = 5
-test("getYMin: Constant y = 5", lambda: assert_equal(get_y_min("5", -10, 10), 5))
+    # Test 4: Constant function y = 5
+    test("getYMin: Constant y = 5", lambda: assert_equal(get_y_min("5", -10, 10), 5))
 
-test("getYMax: Constant y = 5", lambda: assert_equal(get_y_max("5", -10, 10), 5))
+    test("getYMax: Constant y = 5", lambda: assert_equal(get_y_max("5", -10, 10), 5))
 
-# Test 5: Absolute value y = abs(x)
-test(
-    "getYMin: Absolute value y = abs(x) on [-5, 5]",
-    lambda: assert_in_range(get_y_min("abs(x)", -5, 5), -0.1, 0.1),
-)
+    # Test 5: Absolute value y = abs(x)
+    test(
+        "getYMin: Absolute value y = abs(x) on [-5, 5]",
+        lambda: assert_in_range(get_y_min("abs(x)", -5, 5), -0.1, 0.1),
+    )
 
-# Test 6: Square root y = sqrt(x)
-test(
-    "getYMin: Square root y = sqrt(x) on [0, 9]",
-    lambda: assert_in_range(get_y_min("sqrt(x)", 0, 9), -0.1, 0.1),
-)
+    # Test 6: Square root y = sqrt(x)
+    test(
+        "getYMin: Square root y = sqrt(x) on [0, 9]",
+        lambda: assert_in_range(get_y_min("sqrt(x)", 0, 9), -0.1, 0.1),
+    )
 
-test(
-    "getYMax: Square root y = sqrt(x) on [0, 9]",
-    lambda: assert_in_range(get_y_max("sqrt(x)", 0, 9), 2.9, 3.1),
-)
+    test(
+        "getYMax: Square root y = sqrt(x) on [0, 9]",
+        lambda: assert_in_range(get_y_max("sqrt(x)", 0, 9), 2.9, 3.1),
+    )
 
-# Test 7: Invalid expression handling
-test(
-    "getYMin: Invalid expression returns default",
-    lambda: assert_equal(get_y_min("invalid_func(x)", -5, 5), -10),
-)
+    # Test 7: Invalid expression handling
+    test(
+        "getYMin: Invalid expression returns default",
+        lambda: assert_equal(get_y_min("invalid_func(x)", -5, 5), -10),
+    )
 
-test(
-    "getYMax: Invalid expression returns default",
-    lambda: assert_equal(get_y_max("invalid_func(x)", -5, 5), 10),
-)
+    test(
+        "getYMax: Invalid expression returns default",
+        lambda: assert_equal(get_y_max("invalid_func(x)", -5, 5), 10),
+    )
 
-# Test 8: Exponential function y = exp(x)
-test(
-    "getYMin: Exponential y = exp(x) on [0, 2]",
-    lambda: assert_in_range(get_y_min("exp(x)", 0, 2), 0.9, 1.1),
-)
+    # Test 8: Exponential function y = exp(x)
+    test(
+        "getYMin: Exponential y = exp(x) on [0, 2]",
+        lambda: assert_in_range(get_y_min("exp(x)", 0, 2), 0.9, 1.1),
+    )
 
-test(
-    "getYMax: Exponential y = exp(x) on [0, 2]",
-    lambda: assert_in_range(get_y_max("exp(x)", 0, 2), 7.2, 7.5),
-)
+    test(
+        "getYMax: Exponential y = exp(x) on [0, 2]",
+        lambda: assert_in_range(get_y_max("exp(x)", 0, 2), 7.2, 7.5),
+    )
 
-# Test 9: Combined function y = sin(x) + cos(x)
-test(
-    "getYMin: Combined sin(x) + cos(x) on [0, 2*pi]",
-    lambda: assert_in_range(get_y_min("sin(x) + cos(x)", 0, 2 * math.pi), -1.5, -1.3),
-)
+    # Test 9: Combined function y = sin(x) + cos(x)
+    test(
+        "getYMin: Combined sin(x) + cos(x) on [0, 2*pi]",
+        lambda: assert_in_range(
+            get_y_min("sin(x) + cos(x)", 0, 2 * math.pi), -1.5, -1.3
+        ),
+    )
 
-# Test 10: Edge case - very small range
-test(
-    "getYMin: Small range [-0.1, 0.1] with x^2",
-    lambda: assert_in_range(get_y_min("x**2", -0.1, 0.1), -0.01, 0.01),
-)
+    # Test 10: Edge case - very small range
+    test(
+        "getYMin: Small range [-0.1, 0.1] with x^2",
+        lambda: assert_in_range(get_y_min("x**2", -0.1, 0.1), -0.01, 0.01),
+    )
 
-# Summary
-print()
-print("=" * 60)
-print(f"Results: {passed} passed, {failed} failed")
-print("=" * 60)
+    # Summary
+    print()
+    print("=" * 60)
+    print(f"Results: {passed} passed, {failed} failed")
+    print("=" * 60)
 
-if failed > 0:
-    sys.exit(1)
-else:
-    print(f"{GREEN}All tests passed!{RESET}")
-    sys.exit(0)
+    if failed > 0:
+        sys.exit(1)
+    else:
+        print(f"{GREEN}All tests passed!{RESET}")
+        sys.exit(0)
