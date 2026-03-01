@@ -434,6 +434,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         try {
             const compiled = math.compile(funcExpr);
+            compiled.evaluate({ x: 0 });
             
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             
@@ -578,15 +579,18 @@ document.addEventListener('DOMContentLoaded', () => {
         const resetCameraBtn = document.getElementById('reset-camera-btn');
         const errorMessage = document.getElementById('3d-error-message');
 
+        const width = container.clientWidth || 718;
+        const height = container.clientHeight || 400;
+
         const scene = new THREE.Scene();
         scene.background = new THREE.Color(0x1a1a2e);
 
-        const camera = new THREE.PerspectiveCamera(75, container.clientWidth / container.clientHeight, 0.1, 1000);
+        const camera = new THREE.PerspectiveCamera(75, width / height, 0.1, 1000);
         camera.position.set(5, 5, 5);
         camera.lookAt(0, 0, 0);
 
         const renderer = new THREE.WebGLRenderer({ antialias: true });
-        renderer.setSize(container.clientWidth, container.clientHeight);
+        renderer.setSize(width, height);
         container.appendChild(renderer.domElement);
 
         const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
