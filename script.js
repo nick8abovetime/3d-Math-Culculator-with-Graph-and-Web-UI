@@ -944,4 +944,75 @@ document.addEventListener('DOMContentLoaded', () => {
     updateVizBtn.addEventListener('click', drawVisualization);
 
     drawVisualization();
+
+    const chatToggle = document.getElementById('chat-toggle');
+    const chatPanel = document.getElementById('chat-panel');
+    const chatClose = document.getElementById('chat-close');
+    const chatInput = document.getElementById('chat-input');
+    const chatSend = document.getElementById('chat-send');
+    const chatMessages = document.getElementById('chat-messages');
+
+    chatToggle.addEventListener('click', () => {
+        chatPanel.classList.add('open');
+        chatInput.focus();
+    });
+
+    chatClose.addEventListener('click', () => {
+        chatPanel.classList.remove('open');
+    });
+
+    function addMessage(content, type, expression, result) {
+        const messageDiv = document.createElement('div');
+        messageDiv.className = `chat-message ${type}`;
+        
+        let messageContent = content;
+        if (expression) {
+            messageContent = `<span class="expression">${expression}</span>`;
+        }
+        if (result !== undefined) {
+            messageContent += `<span class="result">= ${result}</span>`;
+        }
+        
+        messageDiv.innerHTML = messageContent;
+        chatMessages.appendChild(messageDiv);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+
+    function processChatMessage(message) {
+        const trimmed = message.trim();
+        
+        if (!trimmed) {
+            addMessage('Please enter a math expression', 'error');
+            return;
+        }
+
+        addMessage(trimmed, 'user');
+
+        try {
+            const result = math.evaluate(trimmed);
+            const formatted = typeof result === 'number' ? result : 
+                             result.valueOf ? result.valueOf() : result;
+            addMessage('', 'system', trimmed, formatted);
+        } catch (error) {
+            addMessage(`Error: ${error.message}`, 'error');
+        }
+    }
+
+    chatSend.addEventListener('click', () => {
+        const message = chatInput.value;
+        if (message) {
+            processChatMessage(message);
+            chatInput.value = '';
+        }
+    });
+
+    chatInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+            const message = chatInput.value;
+            if (message) {
+                processChatMessage(message);
+                chatInput.value = '';
+            }
+        }
+    });
 });
