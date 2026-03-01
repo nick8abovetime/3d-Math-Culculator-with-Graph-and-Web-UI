@@ -575,9 +575,12 @@ document.addEventListener('DOMContentLoaded', () => {
     function initThreeJS() {
         const container = document.getElementById('3d-canvas-container');
         const surfaceGraphBtn = document.getElementById('surface-graph-btn');
+        const refreshSurfaceBtn = document.getElementById('refresh-surface-btn');
         const rotateBtn = document.getElementById('rotate-btn');
         const resetCameraBtn = document.getElementById('reset-camera-btn');
         const errorMessage = document.getElementById('3d-error-message');
+        
+        let currentSurfaceFunction = null;
 
         const width = container.clientWidth || 718;
         const height = container.clientHeight || 400;
@@ -686,7 +689,21 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             try {
                 math.compile(funcStr).evaluate({ x: 0, y: 0 });
+                currentSurfaceFunction = funcStr;
                 createGraph(funcStr);
+                errorMessage.textContent = '';
+            } catch (error) {
+                errorMessage.textContent = `Error: ${error.message}`;
+            }
+        });
+
+        refreshSurfaceBtn.addEventListener('click', () => {
+            if (!currentSurfaceFunction) {
+                errorMessage.textContent = 'No surface to refresh. Generate a surface first.';
+                return;
+            }
+            try {
+                createGraph(currentSurfaceFunction);
                 errorMessage.textContent = '';
             } catch (error) {
                 errorMessage.textContent = `Error: ${error.message}`;
