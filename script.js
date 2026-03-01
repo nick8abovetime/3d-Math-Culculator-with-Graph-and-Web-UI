@@ -9,6 +9,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const graphMode = document.querySelector('.graph-mode');
     const surfaceMode = document.querySelector('.surface-mode');
     const visualizeMode = document.querySelector('.visualize-mode');
+    const intentMode = document.querySelector('.intent-mode');
 
     let currentMode = 'expression';
 
@@ -23,42 +24,26 @@ document.addEventListener('DOMContentLoaded', () => {
             graphMode.style.display = 'none';
             surfaceMode.style.display = 'none';
             document.querySelector('.matrix-mode').style.display = 'none';
+            visualizeMode.style.display = 'none';
+            intentMode.style.display = 'none';
             
             if (currentMode === 'expression') {
                 expressionMode.style.display = 'flex';
-                vectorMode.style.display = 'none';
-                graphMode.style.display = 'none';
-                surfaceMode.style.display = 'none';
-                visualizeMode.style.display = 'none';
             } else if (currentMode === 'vector') {
-                expressionMode.style.display = 'none';
                 vectorMode.style.display = 'block';
-                graphMode.style.display = 'none';
-                surfaceMode.style.display = 'none';
-                visualizeMode.style.display = 'none';
             } else if (currentMode === 'graph') {
-                expressionMode.style.display = 'none';
-                vectorMode.style.display = 'none';
                 graphMode.style.display = 'block';
-                surfaceMode.style.display = 'none';
-                visualizeMode.style.display = 'none';
             } else if (currentMode === 'surface') {
-                expressionMode.style.display = 'none';
-                vectorMode.style.display = 'none';
-                graphMode.style.display = 'none';
                 surfaceMode.style.display = 'block';
-                visualizeMode.style.display = 'none';
                 if (!threeApp) initThreeJS();
             } else if (currentMode === 'visualize') {
-                expressionMode.style.display = 'none';
-                vectorMode.style.display = 'none';
-                graphMode.style.display = 'none';
-                surfaceMode.style.display = 'none';
                 visualizeMode.style.display = 'block';
                 drawVisualization();
             } else if (currentMode === 'matrix') {
                 document.querySelector('.matrix-mode').style.display = 'block';
                 initMatrixInputs();
+            } else if (currentMode === 'intent') {
+                intentMode.style.display = 'block';
             }
             resultOutput.textContent = '-';
             errorMessage.textContent = '';
@@ -72,6 +57,8 @@ document.addEventListener('DOMContentLoaded', () => {
             calculateVector();
         } else if (currentMode === 'graph') {
             drawGraph();
+        } else if (currentMode === 'intent') {
+            calculateIntent();
         }
     }
 
@@ -192,9 +179,89 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    function calculateIntent() {
+        const intentInput = document.getElementById('intent-input');
+        const expression = intentInput.value.trim();
+        
+        if (!expression) {
+            resultOutput.textContent = '-';
+            errorMessage.textContent = 'Please enter an intent';
+            return;
+        }
+
+        try {
+            const intent = IntentParser.parse(expression);
+            const result = IntentParser.execute(intent);
+
+            if (result.error) {
+                resultOutput.textContent = '-';
+                errorMessage.textContent = `Error: ${result.error}`;
+                return;
+            }
+
+            if (result.action === 'switch_mode') {
+                if (result.mode === 'graph') {
+                    document.getElementById('graph-function').value = result.params.function;
+                    document.getElementById('x-min').value = result.params.xMin;
+                    document.getElementById('x-max').value = result.params.xMax;
+                    
+                    modeTabs.forEach(t => t.classList.remove('active'));
+                    document.querySelector('[data-mode="graph"]').classList.add('active');
+                    currentMode = 'graph';
+                    expressionMode.style.display = 'none';
+                    vectorMode.style.display = 'none';
+                    graphMode.style.display = 'block';
+                    surfaceMode.style.display = 'none';
+                    visualizeMode.style.display = 'none';
+                    document.querySelector('.matrix-mode').style.display = 'none';
+                    intentMode.style.display = 'none';
+                    
+                    drawGraph();
+                    resultOutput.textContent = 'Switched to graph mode';
+                    errorMessage.textContent = '';
+                } else if (result.mode === 'surface') {
+                    document.getElementById('3d-function').value = result.params.function;
+                    
+                    modeTabs.forEach(t => t.classList.remove('active'));
+                    document.querySelector('[data-mode="surface"]').classList.add('active');
+                    currentMode = 'surface';
+                    expressionMode.style.display = 'none';
+                    vectorMode.style.display = 'none';
+                    graphMode.style.display = 'none';
+                    surfaceMode.style.display = 'block';
+                    visualizeMode.style.display = 'none';
+                    document.querySelector('.matrix-mode').style.display = 'none';
+                    intentMode.style.display = 'none';
+                    
+                    if (!threeApp) initThreeJS();
+                    document.getElementById('surface-graph-btn').click();
+                    resultOutput.textContent = 'Switched to surface mode';
+                    errorMessage.textContent = '';
+                }
+            } else if (result.action === 'result') {
+                if (typeof result.result === 'string' && result.result.includes('<table>')) {
+                    resultOutput.innerHTML = result.result;
+                } else {
+                    resultOutput.textContent = result.result;
+                }
+                errorMessage.textContent = '';
+            }
+        } catch (error) {
+            resultOutput.textContent = '-';
+            errorMessage.textContent = `Error: ${error.message}`;
+        }
+    }
+
     calculateBtn.addEventListener('click', calculate);
 
     expressionInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+            calculate();
+        }
+    });
+
+    const intentInput = document.getElementById('intent-input');
+    intentInput.addEventListener('keypress', (e) => {
         if (e.key === 'Enter') {
             calculate();
         }
