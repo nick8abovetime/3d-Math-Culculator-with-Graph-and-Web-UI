@@ -10,6 +10,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const surfaceMode = document.querySelector('.surface-mode');
     const visualizeMode = document.querySelector('.visualize-mode');
     const intentMode = document.querySelector('.intent-mode');
+    const chatMode = document.querySelector('.chat-mode');
 
     let currentMode = 'expression';
 
@@ -26,6 +27,7 @@ document.addEventListener('DOMContentLoaded', () => {
             document.querySelector('.matrix-mode').style.display = 'none';
             visualizeMode.style.display = 'none';
             intentMode.style.display = 'none';
+            chatMode.style.display = 'none';
             
             if (currentMode === 'expression') {
                 expressionMode.style.display = 'flex';
@@ -44,6 +46,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 initMatrixInputs();
             } else if (currentMode === 'intent') {
                 intentMode.style.display = 'block';
+            } else if (currentMode === 'chat') {
+                chatMode.style.display = 'flex';
+                chatInterface.init();
             }
             resultOutput.textContent = '-';
             errorMessage.textContent = '';

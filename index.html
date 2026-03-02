@@ -20,6 +20,7 @@
             <button class="mode-tab" data-mode="visualize">3D View</button>
             <button class="mode-tab" data-mode="matrix">Matrix</button>
             <button class="mode-tab" data-mode="intent">Intent</button>
+            <button class="mode-tab" data-mode="chat">Chat</button>
         </div>
         
         <div class="calculator">
@@ -143,6 +144,22 @@
                 </div>
             </div>
             
+            <div class="chat-mode" style="display: none;">
+                <div class="chat-messages" id="chat-messages"></div>
+                <div class="chat-input-area">
+                    <input type="text" id="chat-input" placeholder="Ask me anything... (e.g., 'what is sin(pi/2)' or 'plot x^2')">
+                    <button id="chat-send-btn">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="22" y1="2" x2="11" y2="13"></line>
+                            <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                        </svg>
+                    </button>
+                </div>
+                <div class="chat-actions">
+                    <button id="clear-chat-btn" class="secondary">Clear Chat</button>
+                </div>
+            </div>
+            
             <div class="matrix-mode" style="display: none;">
                 <div class="input-group">
                     <label for="matrix-size">Matrix Size</label>
@@ -187,6 +204,7 @@
         </div>
     </div>
     <script src="intent-parser.js"></script>
+    <script src="chat.js"></script>
     <script src="script.js"></script>
 </body>
 </html>

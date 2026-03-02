@@ -482,4 +482,11 @@
     if (typeof module !== 'undefined' && module.exports) {
         module.exports = IntentParser;
     }
+    
+    if (typeof window !== 'undefined') {
+        window.IntentParser = IntentParser;
+        window.parseIntent = function(input) {
+            return IntentParser.parse(input);
+        };
+    }
 })();
