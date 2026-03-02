@@ -1017,60 +1017,104 @@ document.addEventListener('DOMContentLoaded', () => {
 
     drawVisualization();
 
-    const chatToggle = document.getElementById('chat-toggle');
-    const chatPanel = document.getElementById('chat-panel');
-    const chatClose = document.getElementById('chat-close');
+    const chatProvider = document.getElementById('chat-provider');
+    const chatModel = document.getElementById('chat-model');
+    const chatApiKey = document.getElementById('chat-api-key');
     const chatInput = document.getElementById('chat-input');
-    const chatSend = document.getElementById('chat-send');
+    const chatSendBtn = document.getElementById('chat-send-btn');
     const chatMessages = document.getElementById('chat-messages');
 
-    chatToggle.addEventListener('click', () => {
-        chatPanel.classList.add('open');
-        chatInput.focus();
-    });
+    let chatClient = null;
+    let chatHistory = [];
 
-    chatClose.addEventListener('click', () => {
-        chatPanel.classList.remove('open');
-    });
+    function updateModelOptions() {
+        const provider = chatProvider.value;
+        const modelSelect = chatModel;
+        modelSelect.innerHTML = '';
+        
+        if (provider === 'openai') {
+            ['gpt-4o', 'gpt-4', 'gpt-3.5-turbo'].forEach(model => {
+                const option = document.createElement('option');
+                option.value = model;
+                option.textContent = model === 'gpt-4o' ? 'GPT-4o' : 
+                                     model === 'gpt-4' ? 'GPT-4' : 'GPT-3.5 Turbo';
+                modelSelect.appendChild(option);
+            });
+        } else {
+            ['claude-3-opus-20240229', 'claude-3-sonnet-20240229', 'claude-3-haiku-20240307'].forEach(model => {
+                const option = document.createElement('option');
+                option.value = model;
+                option.textContent = model.includes('opus') ? 'Claude 3 Opus' :
+                                     model.includes('sonnet') ? 'Claude 3 Sonnet' : 'Claude 3 Haiku';
+                modelSelect.appendChild(option);
+            });
+        }
+    }
 
-    function addMessage(content, type, expression, result) {
+    chatProvider.addEventListener('change', updateModelOptions);
+    updateModelOptions();
+
+    function createChatClient() {
+        const apiKey = chatApiKey.value.trim();
+        const provider = chatProvider.value;
+        const model = chatModel.value;
+        
+        if (!apiKey) {
+            return null;
+        }
+        
+        return createClient(provider, { apiKey, model });
+    }
+
+    function addMessage(content, type) {
         const messageDiv = document.createElement('div');
         messageDiv.className = `chat-message ${type}`;
-        
-        let messageContent = content;
-        if (expression) {
-            messageContent = `<span class="expression">${expression}</span>`;
-        }
-        if (result !== undefined) {
-            messageContent += `<span class="result">= ${result}</span>`;
-        }
-        
-        messageDiv.innerHTML = messageContent;
+        messageDiv.textContent = content;
         chatMessages.appendChild(messageDiv);
         chatMessages.scrollTop = chatMessages.scrollHeight;
     }
 
-    function processChatMessage(message) {
+    async function processChatMessage(message) {
         const trimmed = message.trim();
         
         if (!trimmed) {
-            addMessage('Please enter a math expression', 'error');
+            addMessage('Please enter a message', 'error');
             return;
         }
 
         addMessage(trimmed, 'user');
 
+        const client = createChatClient();
+        if (!client) {
+            addMessage('Please enter your API key', 'error');
+            return;
+        }
+
+        chatSendBtn.disabled = true;
+        chatSendBtn.textContent = 'Sending...';
+
         try {
-            const result = math.evaluate(trimmed);
-            const formatted = typeof result === 'number' ? result : 
-                             result.valueOf ? result.valueOf() : result;
-            addMessage('', 'system', trimmed, formatted);
+            chatHistory.push({ role: 'user', content: trimmed });
+            
+            const systemMessage = 'You are a helpful math assistant. Help the user with mathematical calculations and explanations.';
+            const messages = [
+                { role: 'system', content: systemMessage },
+                ...chatHistory
+            ];
+
+            const response = await client.chat(messages);
+            
+            chatHistory.push({ role: 'assistant', content: response });
+            addMessage(response, 'assistant');
         } catch (error) {
             addMessage(`Error: ${error.message}`, 'error');
+        } finally {
+            chatSendBtn.disabled = false;
+            chatSendBtn.textContent = 'Send';
         }
     }
 
-    chatSend.addEventListener('click', () => {
+    chatSendBtn.addEventListener('click', () => {
         const message = chatInput.value;
         if (message) {
             processChatMessage(message);
