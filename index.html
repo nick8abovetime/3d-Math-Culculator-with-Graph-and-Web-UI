@@ -20,6 +20,7 @@
             <button class="mode-tab" data-mode="visualize">3D View</button>
             <button class="mode-tab" data-mode="matrix">Matrix</button>
             <button class="mode-tab" data-mode="intent">Intent</button>
+            <button class="mode-tab" data-mode="chat">Chat</button>
         </div>
         
         <div class="calculator">
@@ -143,6 +144,44 @@
                 </div>
             </div>
             
+            <div class="chat-mode" style="display: none;">
+                <div class="chat-config">
+                    <div class="input-group">
+                        <label for="chat-provider">LLM Provider</label>
+                        <select id="chat-provider">
+                            <option value="openai">OpenAI</option>
+                            <option value="anthropic">Anthropic</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label for="chat-model">Model</label>
+                        <select id="chat-model">
+                            <option value="gpt-4">GPT-4</option>
+                            <option value="gpt-3.5-turbo">GPT-3.5 Turbo</option>
+                            <option value="claude-3-opus-20240229">Claude 3 Opus</option>
+                            <option value="claude-3-sonnet-20240229">Claude 3 Sonnet</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label for="chat-api-key">API Key</label>
+                        <input type="password" id="chat-api-key" placeholder="Enter your API key">
+                    </div>
+                    <button id="chat-connect-btn">Connect</button>
+                </div>
+                <div class="chat-container">
+                    <div class="chat-messages" id="chat-messages">
+                        <div class="chat-message system">
+                            <span class="message-content">Hello! I'm your math assistant. Ask me anything about math, or try commands like "plot sin(x)" or "solve x^2 = 4".</span>
+                        </div>
+                    </div>
+                    <div class="chat-input-container">
+                        <input type="text" id="chat-input" placeholder="Ask a math question...">
+                        <button id="chat-send-btn">Send</button>
+                    </div>
+                </div>
+                <div class="chat-status" id="chat-status">Not connected</div>
+            </div>
+            
             <div class="matrix-mode" style="display: none;">
                 <div class="input-group">
                     <label for="matrix-size">Matrix Size</label>
@@ -186,6 +225,7 @@
             <div class="error" id="error-message"></div>
         </div>
     </div>
+    <script src="llm-client.js"></script>
     <script src="intent-parser.js"></script>
     <script src="script.js"></script>
 </body>

@@ -10,8 +10,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const surfaceMode = document.querySelector('.surface-mode');
     const visualizeMode = document.querySelector('.visualize-mode');
     const intentMode = document.querySelector('.intent-mode');
+    const chatMode = document.querySelector('.chat-mode');
 
     let currentMode = 'expression';
+    let chatClient = null;
+    let chatMessages = [];
 
     modeTabs.forEach(tab => {
         tab.addEventListener('click', () => {
@@ -44,6 +47,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 initMatrixInputs();
             } else if (currentMode === 'intent') {
                 intentMode.style.display = 'block';
+            } else if (currentMode === 'chat') {
+                chatMode.style.display = 'block';
             }
             resultOutput.textContent = '-';
             errorMessage.textContent = '';
@@ -1012,60 +1017,142 @@ document.addEventListener('DOMContentLoaded', () => {
 
     drawVisualization();
 
-    const chatToggle = document.getElementById('chat-toggle');
-    const chatPanel = document.getElementById('chat-panel');
-    const chatClose = document.getElementById('chat-close');
+    const chatProviderSelect = document.getElementById('chat-provider');
+    const chatModelSelect = document.getElementById('chat-model');
+    const chatApiKeyInput = document.getElementById('chat-api-key');
+    const chatConnectBtn = document.getElementById('chat-connect-btn');
+    const chatMessagesContainer = document.getElementById('chat-messages');
     const chatInput = document.getElementById('chat-input');
-    const chatSend = document.getElementById('chat-send');
-    const chatMessages = document.getElementById('chat-messages');
+    const chatSendBtn = document.getElementById('chat-send-btn');
+    const chatStatus = document.getElementById('chat-status');
 
-    chatToggle.addEventListener('click', () => {
-        chatPanel.classList.add('open');
-        chatInput.focus();
+    chatProviderSelect.addEventListener('change', () => {
+        const provider = chatProviderSelect.value;
+        chatModelSelect.innerHTML = '';
+        
+        if (provider === 'openai') {
+            chatModelSelect.innerHTML = `
+                <option value="gpt-4">GPT-4</option>
+                <option value="gpt-3.5-turbo">GPT-3.5 Turbo</option>
+            `;
+        } else {
+            chatModelSelect.innerHTML = `
+                <option value="claude-3-opus-20240229">Claude 3 Opus</option>
+                <option value="claude-3-sonnet-20240229">Claude 3 Sonnet</option>
+            `;
+        }
     });
 
-    chatClose.addEventListener('click', () => {
-        chatPanel.classList.remove('open');
-    });
+    chatConnectBtn.addEventListener('click', () => {
+        const provider = chatProviderSelect.value;
+        const model = chatModelSelect.value;
+        const apiKey = chatApiKeyInput.value.trim();
 
-    function addMessage(content, type, expression, result) {
-        const messageDiv = document.createElement('div');
-        messageDiv.className = `chat-message ${type}`;
-        
-        let messageContent = content;
-        if (expression) {
-            messageContent = `<span class="expression">${expression}</span>`;
-        }
-        if (result !== undefined) {
-            messageContent += `<span class="result">= ${result}</span>`;
-        }
-        
-        messageDiv.innerHTML = messageContent;
-        chatMessages.appendChild(messageDiv);
-        chatMessages.scrollTop = chatMessages.scrollHeight;
-    }
-
-    function processChatMessage(message) {
-        const trimmed = message.trim();
-        
-        if (!trimmed) {
-            addMessage('Please enter a math expression', 'error');
+        if (!apiKey) {
+            chatStatus.textContent = 'Please enter an API key';
+            chatStatus.className = 'chat-status error';
             return;
         }
 
-        addMessage(trimmed, 'user');
-
         try {
-            const result = math.evaluate(trimmed);
-            const formatted = typeof result === 'number' ? result : 
-                             result.valueOf ? result.valueOf() : result;
-            addMessage('', 'system', trimmed, formatted);
+            chatClient = createClient(provider, {
+                apiKey: apiKey,
+                model: model
+            });
+
+            chatClient.apiKey = apiKey;
+            chatClient.setModel(model);
+
+            chatConnectBtn.textContent = 'Connected';
+            chatConnectBtn.classList.add('connected');
+            chatStatus.textContent = `Connected to ${model}`;
+            chatStatus.className = 'chat-status connected';
+            chatApiKeyInput.disabled = true;
+            chatProviderSelect.disabled = true;
+            chatModelSelect.disabled = true;
         } catch (error) {
-            addMessage(`Error: ${error.message}`, 'error');
+            chatStatus.textContent = `Connection failed: ${error.message}`;
+            chatStatus.className = 'chat-status error';
         }
+    });
+
+    function addChatMessage(content, type) {
+        const messageDiv = document.createElement('div');
+        messageDiv.className = `chat-message ${type}`;
+        messageDiv.innerHTML = `<span class="message-content">${content}</span>`;
+        chatMessagesContainer.appendChild(messageDiv);
+        chatMessagesContainer.scrollTop = chatMessagesContainer.scrollHeight;
     }
 
-    chatSend.addEventListener('click', () => {
+    async function processChatMessage(message) {
+        const trimmed = message.trim();
+        
+        if (!trimmed) {
+            return;
+        }
+
+        addChatMessage(trimmed, 'user');
+        chatInput.disabled = true;
+        chatSendBtn.disabled = true;
+
+        try {
+            const intent = IntentParser.parse(trimmed);
+            
+            if (intent.type !== 'expression' && intent.type !== 'unknown') {
+                const result = IntentParser.execute(intent);
+                
+                if (result.error) {
+                    addChatMessage(`Error: ${result.error}`, 'error');
+                } else if (result.action === 'switch_mode') {
+                    let response = `Switched to ${result.mode} mode. `;
+                    if (result.params && result.params.function) {
+                        response += `Function: ${result.params.function}`;
+                    }
+                    addChatMessage(response, 'system');
+                } else if (result.action === 'result') {
+                    let response = '';
+                    if (result.details) {
+                        response = `${result.details}\n`;
+                    }
+                    response += `Result: ${result.result}`;
+                    addChatMessage(response, 'system');
+                }
+            } else if (chatClient) {
+                const systemPrompt = `You are a helpful math assistant. You can:
+- Evaluate mathematical expressions
+- Explain math concepts
+- Help with calculus, algebra, geometry, statistics
+- Create graphs and visualizations when asked
+
+When the user asks to plot or graph something, respond that you can help switch to the appropriate mode.`;
+
+                chatMessages.push({ role: 'system', content: systemPrompt });
+                chatMessages.push({ role: 'user', content: trimmed });
+
+                const response = await chatClient.chat(chatMessages);
+                
+                chatMessages.push({ role: 'assistant', content: response });
+                addChatMessage(response, 'system');
+            } else {
+                try {
+                    const result = math.evaluate(trimmed);
+                    const formatted = typeof result === 'number' ? result : 
+                                     result.valueOf ? result.valueOf() : result;
+                    addChatMessage(`Result: ${formatted}`, 'system');
+                } catch (evalError) {
+                    addChatMessage('Please connect to an LLM provider or enter a valid math expression.', 'error');
+                }
+            }
+        } catch (error) {
+            addChatMessage(`Error: ${error.message}`, 'error');
+        }
+
+        chatInput.disabled = false;
+        chatSendBtn.disabled = false;
+        chatInput.focus();
+    }
+
+    chatSendBtn.addEventListener('click', () => {
         const message = chatInput.value;
         if (message) {
             processChatMessage(message);
