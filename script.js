@@ -1045,7 +1045,17 @@ document.addEventListener('DOMContentLoaded', () => {
         chatMessages.scrollTop = chatMessages.scrollHeight;
     }
 
-    function processChatMessage(message) {
+    let llmClient = null;
+    
+    try {
+        llmClient = createClient('anthropic', {
+            apiKey: localStorage.getItem('anthropic_api_key') || ''
+        });
+    } catch (e) {
+        console.log('LLM client not configured');
+    }
+
+    async function processChatMessage(message) {
         const trimmed = message.trim();
         
         if (!trimmed) {
@@ -1060,25 +1070,38 @@ document.addEventListener('DOMContentLoaded', () => {
             const formatted = typeof result === 'number' ? result : 
                              result.valueOf ? result.valueOf() : result;
             addMessage('', 'system', trimmed, formatted);
-        } catch (error) {
-            addMessage(`Error: ${error.message}`, 'error');
+        } catch (mathError) {
+            if (llmClient && llmClient.apiKey) {
+                addMessage('Thinking...', 'system');
+                try {
+                    const response = await llmClient.chat([
+                        { role: 'user', content: trimmed }
+                    ]);
+                    chatMessages.removeChild(chatMessages.lastChild);
+                    addMessage(response, 'system');
+                } catch (llmError) {
+                    addMessage(`LLM Error: ${llmError.message}`, 'error');
+                }
+            } else {
+                addMessage(`Not a valid expression. Configure API key for AI assistance.`, 'error');
+            }
         }
     }
 
-    chatSend.addEventListener('click', () => {
+    chatSend.addEventListener('click', async () => {
         const message = chatInput.value;
         if (message) {
-            processChatMessage(message);
             chatInput.value = '';
+            await processChatMessage(message);
         }
     });
 
-    chatInput.addEventListener('keypress', (e) => {
+    chatInput.addEventListener('keypress', async (e) => {
         if (e.key === 'Enter') {
             const message = chatInput.value;
             if (message) {
-                processChatMessage(message);
                 chatInput.value = '';
+                await processChatMessage(message);
             }
         }
     });

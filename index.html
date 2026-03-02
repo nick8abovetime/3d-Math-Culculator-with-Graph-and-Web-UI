@@ -186,7 +186,22 @@
             <div class="error" id="error-message"></div>
         </div>
     </div>
+    <button id="chat-toggle" class="chat-toggle" title="Chat">💬</button>
+    
+    <div id="chat-panel" class="chat-panel">
+        <div class="chat-header">
+            <span>Math Assistant</span>
+            <button id="chat-close" class="chat-close">&times;</button>
+        </div>
+        <div id="chat-messages" class="chat-messages"></div>
+        <div class="chat-input-container">
+            <input type="text" id="chat-input" placeholder="Ask a math question...">
+            <button id="chat-send" class="chat-send">Send</button>
+        </div>
+    </div>
+    
     <script src="intent-parser.js"></script>
+    <script src="llm-client.js"></script>
     <script src="script.js"></script>
 </body>
 </html>
